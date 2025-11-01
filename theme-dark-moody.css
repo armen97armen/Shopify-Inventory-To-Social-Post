@@ -1,0 +1,198 @@
+/**
+ * DARK MOODY THEME - Reusable Design System
+ * 
+ * Colors: Pure black base with dark grays
+ * Glass: Frosted glass effects with backdrop blur
+ * Neon: Blue and pink accents
+ * Borders: Subtle white borders with glows
+ */
+
+:root {
+    /* Base Colors */
+    --color-black-void: #000000;
+    --color-dark-carbon: #0a0a0a;
+    --color-glass-dark: #1a1a1a;
+    --color-chrome-accent: #2a2a2a;
+    
+    /* Neon Accents */
+    --color-neon-blue: #0080ff;
+    --color-neon-pink: #ff0080;
+    
+    /* Text Colors - Ensuring proper contrast */
+    --color-text-primary: rgba(255, 255, 255, 0.95);
+    --color-text-secondary: rgba(255, 255, 255, 0.70);
+    --color-text-tertiary: rgba(255, 255, 255, 0.50);
+    --color-text-placeholder: rgba(255, 255, 255, 0.30);
+    
+    /* Border Colors */
+    --color-border-subtle: rgba(255, 255, 255, 0.05);
+    --color-border-visible: rgba(255, 255, 255, 0.10);
+    --color-border-active: rgba(255, 255, 255, 0.20);
+    
+    /* Glass Effects */
+    --glass-bg: rgba(26, 26, 26, 0.30);
+    --glass-bg-heavy: rgba(26, 26, 26, 0.60);
+    --glass-blur: blur(16px);
+    
+    /* Shadows */
+    --shadow-soft: 0 4px 16px rgba(0, 0, 0, 0.5);
+    --shadow-medium: 0 8px 32px rgba(0, 0, 0, 0.6);
+    --shadow-large: 0 16px 64px rgba(0, 0, 0, 0.7);
+    
+    /* Neon Glows */
+    --glow-blue: 0 0 20px rgba(0, 128, 255, 0.3);
+    --glow-pink: 0 0 20px rgba(255, 0, 128, 0.3);
+}
+
+/* Reusable Component Classes */
+.theme-dark-moody {
+    background-color: var(--color-black-void);
+    color: var(--color-text-primary);
+}
+
+.theme-glass-card {
+    background: var(--glass-bg);
+    backdrop-filter: var(--glass-blur);
+    border: 1px solid var(--color-border-visible);
+    box-shadow: var(--shadow-medium);
+}
+
+.theme-glass-card:hover {
+    border-color: var(--color-border-active);
+    transition: all 0.3s ease;
+}
+
+.theme-glass-input {
+    background: rgba(42, 42, 42, 0.50);
+    backdrop-filter: blur(8px);
+    border: 1px solid var(--color-border-visible);
+    color: var(--color-text-primary);
+}
+
+.theme-glass-input:focus {
+    outline: none;
+    border-color: var(--color-border-active);
+    box-shadow: 0 0 0 3px rgba(0, 128, 255, 0.2);
+}
+
+.theme-glass-button {
+    background: linear-gradient(135deg, rgba(0, 128, 255, 0.20), rgba(255, 0, 128, 0.20));
+    backdrop-filter: blur(8px);
+    border: 1px solid var(--color-border-visible);
+    color: var(--color-text-primary);
+    transition: all 0.3s ease;
+}
+
+.theme-glass-button:hover:not(:disabled) {
+    background: linear-gradient(135deg, rgba(0, 128, 255, 0.30), rgba(255, 0, 128, 0.30));
+    border-color: var(--color-border-active);
+    transform: scale(1.02);
+    box-shadow: var(--glow-blue);
+}
+
+.theme-glass-button:disabled {
+    opacity: 0.30;
+    cursor: not-allowed;
+}
+
+.theme-text-label {
+    color: var(--color-text-secondary);
+    font-weight: 600;
+}
+
+.theme-text-body {
+    color: var(--color-text-primary);
+}
+
+.theme-text-muted {
+    color: var(--color-text-secondary);
+}
+
+.theme-text-placeholder {
+    color: var(--color-text-placeholder);
+}
+
+/* Loading indicators */
+.theme-loading-ring {
+    border: 2px solid var(--color-border-visible);
+}
+
+.theme-loading-ring-active {
+    border-top-color: var(--color-neon-blue);
+    animation: spin 2s linear infinite;
+}
+
+.theme-loading-dot {
+    background-color: var(--color-neon-blue);
+    box-shadow: 0 0 10px var(--color-neon-blue);
+}
+
+/* Error states */
+.theme-error {
+    background: rgba(255, 0, 128, 0.10);
+    border: 1px solid rgba(255, 0, 128, 0.30);
+    color: var(--color-neon-pink);
+}
+
+/* Success states */
+.theme-success {
+    background: rgba(0, 128, 255, 0.10);
+    border: 1px solid rgba(0, 128, 255, 0.30);
+    color: var(--color-neon-blue);
+}
+
+/* Animations */
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+
+@keyframes pulse {
+    0%, 100% { opacity: 0.6; }
+    50% { opacity: 1; }
+}
+
+@keyframes fadeInUp {
+    0% {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+    100% {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.theme-animate-spin {
+    animation: spin 2s linear infinite;
+}
+
+.theme-animate-pulse {
+    animation: pulse 2s ease-in-out infinite;
+}
+
+.theme-animate-fade-in-up {
+    animation: fadeInUp 0.5s ease-out;
+}
+
+/* Utility classes */
+.theme-rounded-xl {
+    border-radius: 1rem;
+}
+
+.theme-rounded-2xl {
+    border-radius: 1.5rem;
+}
+
+.theme-shadow-soft {
+    box-shadow: var(--shadow-soft);
+}
+
+.theme-shadow-medium {
+    box-shadow: var(--shadow-medium);
+}
+
+.theme-shadow-large {
+    box-shadow: var(--shadow-large);
+}
+
