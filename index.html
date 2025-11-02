@@ -70,7 +70,7 @@
                         'neon-pink': '#ff0080',
                     },
                     fontFamily: {
-                        'sans': ['Space Grotesk', 'Inter', 'system-ui', 'sans-serif'],
+                        'sans': ['Inter', 'system-ui', 'sans-serif'],
                     },
                 }
             }
@@ -120,7 +120,7 @@
         <div class="flex items-center justify-center mb-12">
             <h1 class="text-5xl md:text-7xl font-bold text-center bg-clip-text text-transparent bg-gradient-to-r from-neon-blue to-neon-pink floating">
                 Tweet Generator
-                <span class="block text-2xl md:text-3xl font-normal mt-4 text-white/40">
+                <span class="block text-2xl md:text-3xl font-normal mt-4 text-white/40 tracking-tight">
                     Powered by AI
                 </span>
             </h1>
@@ -158,12 +158,12 @@
                         placeholder="https://x.com/username" 
                         class="w-full px-4 py-3.5 bg-chrome-accent border border-white/30 rounded-xl text-white text-sm placeholder-white/50 focus:outline-none focus:ring-2 focus:ring-neon-blue/60 focus:border-neon-blue/50 transition-all backdrop-blur-sm font-sans"
                     >
-                    <div class="mt-3 p-4 bg-chrome-accent/60 rounded-xl border border-white/20">
-                        <p class="text-white/85 text-xs leading-relaxed mb-2">
+                    <div class="mt-3 p-4 bg-chrome-accent/60 rounded-xl border border-white/20 min-h-fit">
+                        <p class="text-white/85 text-sm leading-relaxed mb-3">
                             <strong class="text-white font-semibold">Purpose:</strong> The AI will analyze the writing style from this X profile to generate tweets that match the tone, voice, and style of the selected profile. This profile's tweets serve as a reference for creating authentic-sounding content.
                         </p>
-                        <p class="text-white/70 text-xs">
-                            <strong class="text-white/90">Example:</strong> https://x.com/dope_as_yola
+                        <p class="text-white/70 text-sm">
+                            <strong class="text-white/90">Example:</strong> <span class="text-white/80 font-mono text-xs">https://x.com/dope_as_yola</span>
                         </p>
                     </div>
                 </div>
@@ -193,14 +193,14 @@
                         placeholder="r8_xxxxxxxxxxxxxxxxxxxxxxxxxxxxx" 
                         class="w-full px-4 py-3.5 bg-chrome-accent border border-white/30 rounded-xl text-white text-sm placeholder-white/50 focus:outline-none focus:ring-2 focus:ring-neon-pink/60 focus:border-neon-pink/50 transition-all backdrop-blur-sm font-mono"
                     >
-                    <div class="mt-3 p-4 bg-chrome-accent/60 rounded-xl border border-white/20">
-                        <p class="text-white/85 text-xs leading-relaxed mb-2">
+                    <div class="mt-3 p-4 bg-chrome-accent/60 rounded-xl border border-white/20 min-h-fit">
+                        <p class="text-white/85 text-sm leading-relaxed mb-3">
                             <strong class="text-white font-semibold">Purpose:</strong> This token authenticates your access to Replicate's AI models (Grok-4 for style analysis and GPT-5-Nano for tweet generation). Required for all AI-powered features.
                         </p>
-                        <p class="text-white/75 text-xs mb-2">
+                        <p class="text-white/75 text-sm mb-3">
                             <strong class="text-white/90">Services Used:</strong> Grok-4 (style analysis) • GPT-5-Nano (tweet generation, capitalization)
                         </p>
-                        <p class="text-white/75 text-xs">
+                        <p class="text-white/75 text-sm">
                             <strong class="text-white/90">Get your token:</strong> <a href="https://replicate.com/account/api-tokens" target="_blank" class="text-neon-pink hover:text-neon-pink/90 underline font-medium">replicate.com/account/api-tokens</a>
                         </p>
                     </div>
@@ -233,7 +233,7 @@
                             placeholder="Your Twitter API Key" 
                             class="w-full px-4 py-3.5 bg-chrome-accent border border-white/30 rounded-xl text-white text-sm placeholder-white/50 focus:outline-none focus:ring-2 focus:ring-neon-blue/60 focus:border-neon-blue/50 transition-all backdrop-blur-sm font-mono"
                         >
-                        <p class="mt-2.5 text-white/75 text-xs leading-relaxed">Your Twitter app's API Key (Consumer Key). Identifies your application.</p>
+                        <p class="mt-2.5 text-white/75 text-sm leading-relaxed">Your Twitter app's API Key (Consumer Key). Identifies your application.</p>
                     </div>
 
                     <!-- API Secret -->
@@ -279,14 +279,14 @@
                     </div>
 
                     <!-- Documentation Box -->
-                    <div class="mt-4 p-4 bg-chrome-accent/60 rounded-xl border border-white/20">
-                        <p class="text-white/85 text-xs leading-relaxed mb-2.5">
+                    <div class="mt-4 p-4 bg-chrome-accent/60 rounded-xl border border-white/20 min-h-fit">
+                        <p class="text-white/85 text-sm leading-relaxed mb-3">
                             <strong class="text-white font-semibold">Purpose:</strong> These credentials authenticate your application with Twitter's API to post generated tweets directly to X. All four credentials are required for posting functionality.
                         </p>
-                        <p class="text-white/75 text-xs mb-2.5">
+                        <p class="text-white/75 text-sm mb-3">
                             <strong class="text-white/90">How to get these:</strong> Create a Twitter Developer account and app at <a href="https://developer.twitter.com" target="_blank" class="text-neon-blue hover:text-neon-blue/90 underline font-medium">developer.twitter.com</a>
                         </p>
-                        <p class="text-white/75 text-xs">
+                        <p class="text-white/75 text-sm">
                             <strong class="text-white/90">Note:</strong> These credentials are stored locally in your browser and sent only when posting tweets. They are never shared with third parties.
                         </p>
                     </div>
