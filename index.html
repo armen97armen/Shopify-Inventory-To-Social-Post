@@ -109,7 +109,9 @@
         
         <!-- Settings Panel -->
         <div id="settingsPanel" class="hidden mb-8 backdrop-blur-lg bg-glass-dark/30 border border-white/5 rounded-2xl p-8 shadow-2xl fade-in-up z-20 relative">
-            <h2 class="text-2xl font-bold text-white mb-6">Settings</h2>
+            <h2 class="text-2xl font-bold text-white mb-6">Settings & API Credentials</h2>
+            
+            <!-- X Profile Link -->
             <div class="mb-6">
                 <label for="xProfileLink" class="block mb-3 text-white/90 font-semibold text-lg">
                     X Profile Link
@@ -122,6 +124,72 @@
                 >
                 <p class="mt-2 text-sm text-white/60">This profile link will be used in the prompt template when generating tweets.</p>
             </div>
+            
+            <!-- Replicate API Token -->
+            <div class="mb-6">
+                <label for="replicateToken" class="block mb-3 text-white/90 font-semibold text-lg">
+                    Replicate API Token
+                </label>
+                <input 
+                    type="text" 
+                    id="replicateToken" 
+                    placeholder="r8_..." 
+                    class="w-full px-4 py-3 bg-chrome-accent/80 border border-white/20 rounded-xl text-white placeholder-white/40 focus:outline-none focus:ring-2 focus:ring-neon-blue/50 focus:border-white/30 transition-all backdrop-blur-sm"
+                >
+                <p class="mt-2 text-sm text-white/60">Your Replicate API token for AI model access.</p>
+            </div>
+            
+            <!-- Twitter API Credentials -->
+            <div class="mb-6">
+                <label class="block mb-3 text-white/90 font-semibold text-lg">
+                    Twitter API Credentials
+                </label>
+                
+                <div class="space-y-4">
+                    <div>
+                        <label for="twitterApiKey" class="block mb-2 text-white/80 text-sm">API Key</label>
+                        <input 
+                            type="text" 
+                            id="twitterApiKey" 
+                            placeholder="Your Twitter API Key" 
+                            class="w-full px-4 py-3 bg-chrome-accent/80 border border-white/20 rounded-xl text-white placeholder-white/40 focus:outline-none focus:ring-2 focus:ring-neon-blue/50 focus:border-white/30 transition-all backdrop-blur-sm"
+                        >
+                    </div>
+                    
+                    <div>
+                        <label for="twitterApiSecret" class="block mb-2 text-white/80 text-sm">API Secret</label>
+                        <input 
+                            type="text" 
+                            id="twitterApiSecret" 
+                            placeholder="Your Twitter API Secret" 
+                            class="w-full px-4 py-3 bg-chrome-accent/80 border border-white/20 rounded-xl text-white placeholder-white/40 focus:outline-none focus:ring-2 focus:ring-neon-blue/50 focus:border-white/30 transition-all backdrop-blur-sm"
+                        >
+                    </div>
+                    
+                    <div>
+                        <label for="twitterAccessToken" class="block mb-2 text-white/80 text-sm">Access Token</label>
+                        <input 
+                            type="text" 
+                            id="twitterAccessToken" 
+                            placeholder="Your Twitter Access Token" 
+                            class="w-full px-4 py-3 bg-chrome-accent/80 border border-white/20 rounded-xl text-white placeholder-white/40 focus:outline-none focus:ring-2 focus:ring-neon-blue/50 focus:border-white/30 transition-all backdrop-blur-sm"
+                        >
+                    </div>
+                    
+                    <div>
+                        <label for="twitterAccessSecret" class="block mb-2 text-white/80 text-sm">Access Secret</label>
+                        <input 
+                            type="text" 
+                            id="twitterAccessSecret" 
+                            placeholder="Your Twitter Access Secret" 
+                            class="w-full px-4 py-3 bg-chrome-accent/80 border border-white/20 rounded-xl text-white placeholder-white/40 focus:outline-none focus:ring-2 focus:ring-neon-blue/50 focus:border-white/30 transition-all backdrop-blur-sm"
+                        >
+                    </div>
+                </div>
+                
+                <p class="mt-2 text-sm text-white/60">Your Twitter API credentials for posting tweets.</p>
+            </div>
+            
             <div class="flex gap-4">
                 <button 
                     id="saveSettingsBtn"
@@ -241,16 +309,41 @@
         $(document).ready(function() {
             let generatedData = null;
 
-            // Load saved X profile link from localStorage
+            // Default values from process.php and post.php
             const defaultXProfileLink = 'https://x.com/dope_as_yola';
+            const defaultReplicateToken = 'YOUR_REPLICATE_API_TOKEN_HERE';
+            const defaultTwitterApiKey = 'YOUR_TWITTER_API_KEY_HERE';
+            const defaultTwitterApiSecret = 'YOUR_TWITTER_API_SECRET_HERE';
+            const defaultTwitterAccessToken = 'YOUR_TWITTER_ACCESS_TOKEN_HERE';
+            const defaultTwitterAccessSecret = 'YOUR_TWITTER_ACCESS_SECRET_HERE';
+
+            // Load saved values from localStorage, fallback to defaults
             let xProfileLink = localStorage.getItem('xProfileLink') || defaultXProfileLink;
+            let replicateToken = localStorage.getItem('replicateToken') || defaultReplicateToken;
+            let twitterApiKey = localStorage.getItem('twitterApiKey') || defaultTwitterApiKey;
+            let twitterApiSecret = localStorage.getItem('twitterApiSecret') || defaultTwitterApiSecret;
+            let twitterAccessToken = localStorage.getItem('twitterAccessToken') || defaultTwitterAccessToken;
+            let twitterAccessSecret = localStorage.getItem('twitterAccessSecret') || defaultTwitterAccessSecret;
+
+            // Pre-fill input fields
             $('#xProfileLink').val(xProfileLink);
+            $('#replicateToken').val(replicateToken);
+            $('#twitterApiKey').val(twitterApiKey);
+            $('#twitterApiSecret').val(twitterApiSecret);
+            $('#twitterAccessToken').val(twitterAccessToken);
+            $('#twitterAccessSecret').val(twitterAccessSecret);
 
             // Settings panel toggle
             $('#settingsBtn').on('click', function() {
                 $('#settingsPanel').toggleClass('hidden');
                 if (!$('#settingsPanel').hasClass('hidden')) {
+                    // Refresh values when opening panel
                     $('#xProfileLink').val(xProfileLink);
+                    $('#replicateToken').val(replicateToken);
+                    $('#twitterApiKey').val(twitterApiKey);
+                    $('#twitterApiSecret').val(twitterApiSecret);
+                    $('#twitterAccessToken').val(twitterAccessToken);
+                    $('#twitterAccessSecret').val(twitterAccessSecret);
                 }
             });
 
@@ -259,18 +352,36 @@
                 const newLink = $('#xProfileLink').val().trim();
                 if (newLink && isValidUrl(newLink)) {
                     xProfileLink = newLink;
+                    replicateToken = $('#replicateToken').val().trim() || defaultReplicateToken;
+                    twitterApiKey = $('#twitterApiKey').val().trim() || defaultTwitterApiKey;
+                    twitterApiSecret = $('#twitterApiSecret').val().trim() || defaultTwitterApiSecret;
+                    twitterAccessToken = $('#twitterAccessToken').val().trim() || defaultTwitterAccessToken;
+                    twitterAccessSecret = $('#twitterAccessSecret').val().trim() || defaultTwitterAccessSecret;
+
+                    // Save to localStorage
                     localStorage.setItem('xProfileLink', xProfileLink);
+                    localStorage.setItem('replicateToken', replicateToken);
+                    localStorage.setItem('twitterApiKey', twitterApiKey);
+                    localStorage.setItem('twitterApiSecret', twitterApiSecret);
+                    localStorage.setItem('twitterAccessToken', twitterAccessToken);
+                    localStorage.setItem('twitterAccessSecret', twitterAccessSecret);
+
                     $('#settingsPanel').addClass('hidden');
-                    // Show success message
                     showNotification('Settings saved successfully!', 'success');
                 } else {
-                    alert('Please enter a valid URL');
+                    alert('Please enter a valid X Profile URL');
                 }
             });
 
             // Cancel settings
             $('#cancelSettingsBtn').on('click', function() {
+                // Reset to saved values
                 $('#xProfileLink').val(xProfileLink);
+                $('#replicateToken').val(replicateToken);
+                $('#twitterApiKey').val(twitterApiKey);
+                $('#twitterApiSecret').val(twitterApiSecret);
+                $('#twitterAccessToken').val(twitterAccessToken);
+                $('#twitterAccessSecret').val(twitterAccessSecret);
                 $('#settingsPanel').addClass('hidden');
             });
 
@@ -337,7 +448,8 @@
                     type: 'POST',
                     data: {
                         shopify_url: shopifyUrl,
-                        x_profile_link: xProfileLink
+                        x_profile_link: xProfileLink,
+                        replicate_token: replicateToken
                     },
                     dataType: 'json',
                     success: function(response) {
@@ -423,7 +535,11 @@
                     type: 'POST',
                     data: {
                         tweet: generatedData.tweet,
-                        image_url: generatedData.image_url
+                        image_url: generatedData.image_url,
+                        api_key: twitterApiKey,
+                        api_secret: twitterApiSecret,
+                        access_token: twitterAccessToken,
+                        access_secret: twitterAccessSecret
                     },
                     dataType: 'json',
                     success: function(response) {
