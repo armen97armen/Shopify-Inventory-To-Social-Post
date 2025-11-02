@@ -36,3 +36,95 @@ body {
     background: var(--bg-primary);
     color: var(--color-text-primary);
 }
+
+/* Override text colors for light theme */
+body {
+    --tw-text-opacity: 1;
+}
+
+/* Ensure white text becomes dark in light mode */
+.text-white {
+    color: var(--color-text-primary) !important;
+}
+
+.text-white\/90 {
+    color: var(--color-text-secondary) !important;
+}
+
+.text-white\/80 {
+    color: var(--color-text-secondary) !important;
+}
+
+.text-white\/60 {
+    color: var(--color-text-tertiary) !important;
+}
+
+.text-white\/50 {
+    color: var(--color-text-muted) !important;
+}
+
+.text-white\/40 {
+    color: var(--color-text-muted) !important;
+}
+
+/* Override border colors */
+.border-white\/10 {
+    border-color: var(--border-color) !important;
+}
+
+.border-white\/20 {
+    border-color: var(--border-accent) !important;
+}
+
+.border-white\/5 {
+    border-color: var(--border-color) !important;
+}
+
+.border-white\/30 {
+    border-color: var(--border-accent) !important;
+}
+
+.border-white\/40 {
+    border-color: var(--border-accent) !important;
+}
+
+/* Override placeholder colors */
+.placeholder-white\/40::placeholder {
+    color: var(--color-text-muted) !important;
+}
+
+input::placeholder,
+textarea::placeholder {
+    color: var(--color-text-muted) !important;
+}
+
+/* Override gradient overlay */
+.bg-gradient-to-b {
+    background: linear-gradient(to bottom, var(--color-black-void), var(--color-dark-carbon), var(--color-black-void)) !important;
+}
+
+/* Override backdrop blur backgrounds */
+.bg-glass-dark\/40,
+.bg-glass-dark\/30,
+.bg-glass-dark\/60 {
+    background-color: rgba(255, 255, 255, 0.9) !important;
+}
+
+.bg-chrome-accent\/40,
+.bg-chrome-accent\/60,
+.bg-chrome-accent\/80 {
+    background-color: var(--bg-accent) !important;
+}
+
+.bg-black-void\/60 {
+    background-color: rgba(248, 248, 248, 0.9) !important;
+}
+
+/* Override neon colors in light mode */
+.text-neon-blue {
+    color: var(--color-neon-blue) !important;
+}
+
+.text-neon-pink {
+    color: var(--color-neon-pink) !important;
+}

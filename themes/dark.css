@@ -36,3 +36,5 @@ body {
     color: var(--color-text-primary);
 }
 
+/* Force Tailwind to use CSS variables */
+
