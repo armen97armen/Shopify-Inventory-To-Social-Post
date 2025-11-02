@@ -35,11 +35,11 @@ body {
 
 /* Apply squeezed letter spacing to headings and buttons */
 h1 {
-    letter-spacing: -0.09em;
+    letter-spacing: -0.11em;
 }
 
 h2, h3, h4, h5, h6 {
-    letter-spacing: -0.06em;
+    letter-spacing: -0.07em;
 }
 
 button {
