@@ -1,0 +1,26 @@
+Fix the capitalization of this tweet to make it look natural and authentic. Only capitalize where it makes sense naturally:
+- Capitalize the first letter of the first word
+- Capitalize proper nouns (names, brands, places)
+- Capitalize "I" 
+- Capitalize the first letter of sentences after periods
+- Keep lowercase for most other words unless it's a proper noun or the start of a sentence
+- Don't force Title Case on everything - keep it natural like a real tweet
+
+IMPORTANT: Fix ALL weird capitalization patterns you encounter:
+- If you see mixed case words - fix them to proper capitalization
+- If you see all caps words in the middle of a sentence - convert them to proper case (or proper noun capitalization if it's a proper noun)
+- If you see all lowercase proper nouns - capitalize them properly
+- Fix any mixed case issues where letters are randomly capitalized
+- Fix words with missing spaces between them
+- Handle any capitalization pattern that looks unnatural or incorrect
+
+Do NOT change:
+- The words themselves (only fix capitalization)
+- The punctuation
+- The emojis
+- The overall structure and meaning
+
+Return ONLY the fixed capitalized tweet text. NO explanations, NO commentary.
+
+Tweet to capitalize: {TWEET_TEXT}
+

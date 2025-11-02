@@ -18,8 +18,8 @@ A single-page web application that generates and posts promotional Twitter/X pos
   - TwitterOAuth (Twitter API integration)
   - Composer CaBundle (SSL certificate handling)
 - **APIs**: 
-  - Twitter API v1.1
-  - Replicate API (AI processing)
+  - Twitter/X API v1.1 and v2
+  - Replicate API (GPT-5-Nano for AI processing)
 
 ## Installation
 
@@ -76,10 +76,10 @@ A single-page web application that generates and posts promotional Twitter/X pos
 
 ### Generation Process (`process.php`)
 
-1. **Scrape Product**: Extracts product image from Shopify page using DOMDocument
-2. **Generate Prompt**: Uses prompt template with customizable X profile link from settings
-3. **AI Generation**: Sends prompt and product image to AI for tweet generation
-4. **Clean & Format**: Processes AI output to ensure proper formatting and character limits
+1. **Analyze Writing Style**: Uses GPT-5-Nano to analyze writing style from X profile based on handle/URL
+2. **Scrape Product**: Extracts product image from Shopify page using DOMDocument
+3. **Generate Tweet**: Uses GPT-5-Nano with style analysis and product image to generate promotional tweet
+4. **Clean & Format**: Processes AI output to ensure proper formatting, character limits, and title case capitalization
 
 ### Posting Process (`post.php`)
 
