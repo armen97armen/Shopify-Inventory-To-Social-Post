@@ -22,6 +22,12 @@ h1 .tracking-ultra-squeezed,
     letter-spacing: -0.08em;
 }
 
+/* Subtitle within h1 - tighter spacing */
+h1 span,
+h1 > span {
+    letter-spacing: -0.045em !important;
+}
+
 h2, h3, h4, h5, h6,
 h2 .tracking-squeezed, h3 .tracking-squeezed, h4 .tracking-squeezed, 
 h5 .tracking-squeezed, h6 .tracking-squeezed,
@@ -94,6 +100,42 @@ label,
     border-color: rgba(255, 255, 255, 0.1);
     background: rgba(26, 26, 26, 0.3);
     opacity: 0.5;
+}
+
+/* Settings Panel - Force Inter font and proper letter spacing */
+#settingsPanel,
+#settingsPanel * {
+    font-family: 'Inter', system-ui, sans-serif !important;
+}
+
+#settingsPanel h2 {
+    letter-spacing: -0.08em !important;
+}
+
+#settingsPanel h3 {
+    letter-spacing: -0.06em !important;
+}
+
+#settingsPanel label,
+#settingsPanel button,
+#settingsPanel input,
+#settingsPanel p,
+#settingsPanel a,
+#settingsPanel strong,
+#settingsPanel span {
+    letter-spacing: -0.02em !important;
+}
+
+#settingsPanel input[type="text"],
+#settingsPanel input[type="url"] {
+    font-family: 'Inter', system-ui, sans-serif !important;
+    letter-spacing: -0.02em !important;
+}
+
+/* Monospace for API tokens - still use Inter but tighter */
+#settingsPanel .font-mono {
+    font-family: 'Inter', monospace !important;
+    letter-spacing: -0.01em !important;
 }
 
 /* Smooth theme transition - prevents twitching */
