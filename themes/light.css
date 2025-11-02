@@ -122,15 +122,22 @@ textarea::placeholder {
     color: #cc0066 !important;
 }
 
-/* Fix button borders for light mode */
+/* Glass-style buttons for light mode - white glass with dark borders */
 .generate-btn, .post-btn {
-    box-shadow: 0 0 0 2px rgba(0, 102, 204, 0.3), 0 0 0 4px rgba(204, 0, 102, 0.2) !important;
+    border: 1px solid rgba(0, 0, 0, 0.2) !important;
+    background: rgba(255, 255, 255, 0.9) !important;
+    backdrop-filter: blur(10px) !important;
+    color: #1a1a1a !important;
 }
 
 .generate-btn:hover, .post-btn:hover {
-    box-shadow: 0 0 0 2px rgba(0, 102, 204, 0.6), 0 0 0 4px rgba(204, 0, 102, 0.4), 0 4px 20px rgba(0, 102, 204, 0.2) !important;
+    border-color: rgba(0, 0, 0, 0.3) !important;
+    background: rgba(255, 255, 255, 0.95) !important;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15) !important;
 }
 
 .generate-btn:disabled, .post-btn:disabled {
-    box-shadow: 0 0 0 2px rgba(128, 128, 128, 0.2) !important;
+    border-color: rgba(0, 0, 0, 0.1) !important;
+    background: rgba(255, 255, 255, 0.5) !important;
+    opacity: 0.5 !important;
 }
