@@ -152,3 +152,61 @@ textarea::placeholder {
     background-color: #0052a3 !important;
     box-shadow: 0 4px 15px rgba(0, 102, 204, 0.4) !important;
 }
+
+/* Settings Panel - Better contrast for light mode */
+#settingsPanel {
+    background: rgba(255, 255, 255, 0.95) !important;
+    border-color: rgba(0, 0, 0, 0.15) !important;
+}
+
+#settingsPanel h2,
+#settingsPanel h3,
+#settingsPanel label,
+#settingsPanel strong {
+    color: #1a1a1a !important;
+}
+
+#settingsPanel p {
+    color: rgba(26, 26, 26, 0.8) !important;
+}
+
+#settingsPanel input {
+    background: #f8f8f8 !important;
+    border-color: rgba(0, 0, 0, 0.2) !important;
+    color: #1a1a1a !important;
+}
+
+#settingsPanel input::placeholder {
+    color: rgba(26, 26, 26, 0.5) !important;
+}
+
+#settingsPanel .bg-chrome-accent,
+#settingsPanel .bg-chrome-accent\/60,
+#settingsPanel .bg-chrome-accent\/80 {
+    background: #f0f0f0 !important;
+    border-color: rgba(0, 0, 0, 0.15) !important;
+}
+
+#settingsPanel .border-white\/10,
+#settingsPanel .border-white\/20,
+#settingsPanel .border-white\/30 {
+    border-color: rgba(0, 0, 0, 0.15) !important;
+}
+
+#settingsPanel a {
+    color: #0066cc !important;
+}
+
+#settingsPanel a:hover {
+    color: #0052a3 !important;
+}
+
+#cancelSettingsBtn {
+    background: #f0f0f0 !important;
+    border-color: rgba(0, 0, 0, 0.2) !important;
+    color: #1a1a1a !important;
+}
+
+#cancelSettingsBtn:hover {
+    background: #e5e5e5 !important;
+}
