@@ -1,7 +1,8 @@
-/* Dark Theme - Futuristic Space Theme */
-/* Default theme - no overrides needed, Tailwind config handles colors */
+/* Dark Theme - Color Overrides Only */
+/* All non-color styling is in css/base.css */
+
 :root {
-    /* CSS variables for potential future use or JavaScript access */
+    /* Color Variables */
     --color-black-void: #000000;
     --color-dark-carbon: #0a0a0a;
     --color-glass-dark: #1a1a1a;
@@ -29,22 +30,22 @@
 body {
     background: var(--bg-primary);
     color: var(--color-text-primary);
-    font-family: 'Inter', system-ui, sans-serif;
-    letter-spacing: -0.02em;
 }
 
-/* Apply squeezed letter spacing to headings and buttons */
-h1 {
-    letter-spacing: -0.08em;
+/* Glass-style buttons for dark mode */
+.generate-btn, .post-btn {
+    border-color: rgba(255, 255, 255, 0.2);
+    background: rgba(26, 26, 26, 0.6);
+    color: #ffffff;
 }
 
-h2, h3, h4, h5, h6 {
-    letter-spacing: -0.06em;
+.generate-btn:hover, .post-btn:hover {
+    border-color: rgba(255, 255, 255, 0.3);
+    background: rgba(26, 26, 26, 0.8);
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
 }
 
-button {
-    letter-spacing: -0.02em;
+.generate-btn:disabled, .post-btn:disabled {
+    border-color: rgba(255, 255, 255, 0.1);
+    background: rgba(26, 26, 26, 0.3);
 }
-
-/* Dark theme is default - no overrides needed */
-

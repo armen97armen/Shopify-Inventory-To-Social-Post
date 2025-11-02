@@ -1,7 +1,8 @@
-/* Light Theme - Clean Modern Theme */
-/* ONLY changes colors - everything else matches dark.css exactly */
+/* Light Theme - Color Overrides Only */
+/* All non-color styling is in css/base.css */
+
 :root {
-    /* CSS variables for light theme - ONLY colors changed */
+    /* Color Variables - ONLY colors changed */
     --color-black-void: #ffffff;
     --color-dark-carbon: #f5f5f5;
     --color-glass-dark: #ffffff;
@@ -29,40 +30,6 @@
 body {
     background: var(--bg-primary) !important;
     color: var(--color-text-primary) !important;
-    /* Match dark mode exactly for font and letter spacing */
-    font-family: 'Inter', system-ui, sans-serif !important;
-    letter-spacing: -0.02em !important;
-}
-
-/* Match dark mode letter spacing EXACTLY - override ALL Tailwind tracking classes */
-body,
-.tracking-squeezed,
-.tracking-tight,
-.tracking-tighter,
-.tracking-tightest,
-.tracking-ultra-squeezed {
-    letter-spacing: -0.02em !important;
-}
-
-h1,
-h1 .tracking-ultra-squeezed,
-.tracking-ultra-squeezed {
-    letter-spacing: -0.08em !important;
-}
-
-h2, h3, h4, h5, h6,
-h2 .tracking-squeezed, h3 .tracking-squeezed, h4 .tracking-squeezed, h5 .tracking-squeezed, h6 .tracking-squeezed,
-.tracking-squeezed:not(body):not(h1) {
-    letter-spacing: -0.06em !important;
-}
-
-button {
-    letter-spacing: -0.02em !important;
-}
-
-label,
-.tracking-tight {
-    letter-spacing: -0.02em !important;
 }
 
 /* Override background colors for light mode */
@@ -158,9 +125,8 @@ textarea::placeholder {
 
 /* Glass-style buttons for light mode - white glass with dark borders */
 .generate-btn, .post-btn {
-    border: 1px solid rgba(0, 0, 0, 0.2) !important;
+    border-color: rgba(0, 0, 0, 0.2) !important;
     background: rgba(255, 255, 255, 0.9) !important;
-    backdrop-filter: blur(10px) !important;
     color: #1a1a1a !important;
 }
 
@@ -173,7 +139,6 @@ textarea::placeholder {
 .generate-btn:disabled, .post-btn:disabled {
     border-color: rgba(0, 0, 0, 0.1) !important;
     background: rgba(255, 255, 255, 0.5) !important;
-    opacity: 0.5 !important;
 }
 
 /* Improve Save Settings button contrast */
