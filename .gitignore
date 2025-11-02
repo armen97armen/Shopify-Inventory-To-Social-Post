@@ -5,6 +5,8 @@ composer.lock
 # Sensitive configuration files
 process.php
 post.php
+config/settings.default.json
+config/settings.default.js
 
 # IDE files
 .vscode/
