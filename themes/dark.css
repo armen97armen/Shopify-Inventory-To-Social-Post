@@ -1,0 +1,38 @@
+/* Dark Theme - Futuristic Space Theme */
+:root {
+    /* Base Colors */
+    --color-black-void: #000000;
+    --color-dark-carbon: #0a0a0a;
+    --color-glass-dark: #1a1a1a;
+    --color-chrome-accent: #2a2a2a;
+    
+    /* Neon Accents */
+    --color-neon-blue: #0080ff;
+    --color-neon-pink: #ff0080;
+    
+    /* Text Colors */
+    --color-text-primary: #ffffff;
+    --color-text-secondary: rgba(255, 255, 255, 0.9);
+    --color-text-tertiary: rgba(255, 255, 255, 0.6);
+    --color-text-muted: rgba(255, 255, 255, 0.4);
+    
+    /* Backgrounds */
+    --bg-primary: var(--color-black-void);
+    --bg-secondary: var(--color-dark-carbon);
+    --bg-glass: rgba(26, 26, 26, 0.3);
+    --bg-accent: var(--color-chrome-accent);
+    
+    /* Borders */
+    --border-color: rgba(255, 255, 255, 0.1);
+    --border-accent: rgba(255, 255, 255, 0.2);
+    
+    /* Shadows */
+    --shadow-glow-blue: 0 0 20px rgba(0, 128, 255, 0.3);
+    --shadow-glow-pink: 0 0 20px rgba(255, 0, 128, 0.3);
+}
+
+body {
+    background: var(--bg-primary);
+    color: var(--color-text-primary);
+}
+

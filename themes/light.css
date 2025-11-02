@@ -1,0 +1,38 @@
+/* Light Theme - Clean Modern Theme */
+:root {
+    /* Base Colors */
+    --color-white-base: #ffffff;
+    --color-light-gray: #f5f5f5;
+    --color-glass-light: #ffffff;
+    --color-chrome-light: #f8f8f8;
+    
+    /* Accent Colors */
+    --color-accent-blue: #0066cc;
+    --color-accent-pink: #cc0066;
+    
+    /* Text Colors */
+    --color-text-primary: #1a1a1a;
+    --color-text-secondary: rgba(26, 26, 26, 0.9);
+    --color-text-tertiary: rgba(26, 26, 26, 0.6);
+    --color-text-muted: rgba(26, 26, 26, 0.4);
+    
+    /* Backgrounds */
+    --bg-primary: var(--color-white-base);
+    --bg-secondary: var(--color-light-gray);
+    --bg-glass: rgba(255, 255, 255, 0.9);
+    --bg-accent: var(--color-chrome-light);
+    
+    /* Borders */
+    --border-color: rgba(0, 0, 0, 0.1);
+    --border-accent: rgba(0, 0, 0, 0.2);
+    
+    /* Shadows */
+    --shadow-glow-blue: 0 0 20px rgba(0, 102, 204, 0.15);
+    --shadow-glow-pink: 0 0 20px rgba(204, 0, 102, 0.15);
+}
+
+body {
+    background: var(--bg-primary);
+    color: var(--color-text-primary);
+}
+

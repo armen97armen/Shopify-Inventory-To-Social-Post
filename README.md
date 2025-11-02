@@ -63,13 +63,26 @@ A single-page web application that generates and posts promotional Twitter/X pos
 .
 ├── index.html              # Main interface
 ├── process.php             # Handles generation (AI, scraping) - not in repo
-├── process.php.example     # Example file with placeholders
 ├── post.php                # Handles posting tweets - not in repo
-├── post.php.example        # Example file with placeholders
-├── prompt_template.txt     # AI prompt template
-├── vendor/                 # Libraries (TwitterOAuth, CaBundle) - not in repo
 ├── composer.json           # Package configuration
-└── README.md              # This file
+├── .gitignore             # Git ignore rules
+├── README.md              # This file
+├── config/
+│   └── examples/          # Example configuration files
+│       ├── process.php.example
+│       └── post.php.example
+├── prompts/               # AI prompt templates
+│   ├── gpt_generation_prompt.txt
+│   ├── style_analysis_prompt.txt
+│   └── capitalization_prompt.txt
+├── themes/                # Theme CSS files
+│   ├── dark.css          # Dark theme (default)
+│   └── light.css         # Light theme
+├── docs/                  # Documentation (archived)
+│   ├── DESIGN_SYSTEM.md
+│   ├── REDESIGN_SUMMARY.md
+│   └── THEME_GUIDE.md
+└── vendor/                # Libraries (TwitterOAuth, CaBundle) - not in repo
 ```
 
 ## How It Works
