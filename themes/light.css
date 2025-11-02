@@ -121,3 +121,16 @@ textarea::placeholder {
 .text-neon-pink {
     color: #cc0066 !important;
 }
+
+/* Fix button borders for light mode */
+.generate-btn, .post-btn {
+    box-shadow: 0 0 0 2px rgba(0, 102, 204, 0.3), 0 0 0 4px rgba(204, 0, 102, 0.2) !important;
+}
+
+.generate-btn:hover, .post-btn:hover {
+    box-shadow: 0 0 0 2px rgba(0, 102, 204, 0.6), 0 0 0 4px rgba(204, 0, 102, 0.4), 0 4px 20px rgba(0, 102, 204, 0.2) !important;
+}
+
+.generate-btn:disabled, .post-btn:disabled {
+    box-shadow: 0 0 0 2px rgba(128, 128, 128, 0.2) !important;
+}
