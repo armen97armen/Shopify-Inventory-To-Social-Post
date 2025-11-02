@@ -34,16 +34,34 @@ body {
     letter-spacing: -0.02em !important;
 }
 
-/* Match dark mode letter spacing EXACTLY */
-h1 {
+/* Match dark mode letter spacing EXACTLY - override ALL Tailwind tracking classes */
+body,
+.tracking-squeezed,
+.tracking-tight,
+.tracking-tighter,
+.tracking-tightest,
+.tracking-ultra-squeezed {
+    letter-spacing: -0.02em !important;
+}
+
+h1,
+h1 .tracking-ultra-squeezed,
+.tracking-ultra-squeezed {
     letter-spacing: -0.08em !important;
 }
 
-h2, h3, h4, h5, h6 {
+h2, h3, h4, h5, h6,
+h2 .tracking-squeezed, h3 .tracking-squeezed, h4 .tracking-squeezed, h5 .tracking-squeezed, h6 .tracking-squeezed,
+.tracking-squeezed:not(body):not(h1) {
     letter-spacing: -0.06em !important;
 }
 
 button {
+    letter-spacing: -0.02em !important;
+}
+
+label,
+.tracking-tight {
     letter-spacing: -0.02em !important;
 }
 
