@@ -29,6 +29,17 @@
 body {
     background: var(--bg-primary);
     color: var(--color-text-primary);
+    font-family: 'Inter', system-ui, sans-serif;
+    letter-spacing: -0.02em;
+}
+
+/* Apply squeezed letter spacing to headings and buttons */
+h1, h2, h3, h4, h5, h6 {
+    letter-spacing: -0.03em;
+}
+
+button {
+    letter-spacing: -0.02em;
 }
 
 /* Dark theme is default - no overrides needed */
