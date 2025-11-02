@@ -1,34 +1,8 @@
-TASK: clean capitalization in this tweet so it looks natural and authentic.
-
-WHEN TO CAPITALIZE
-- first word of the tweet
-- first word after any period
-- proper nouns (names, brands, places, products)
-- pronoun “I”
-
-WHEN NOT TO CAPITALIZE
-- do not use Title Case
-- keep normal lowercase for common words
-
-FIX ALL WEIRD / WRONG CASE
-- fix mixedLetterCase
-- convert ALL CAPS in mid-sentence to normal case (unless it’s a proper noun)
-- if a proper noun is all lower, fix it
-- fix random mid-word capital letters
-- fix missing spaces
-
-ALSO FIX
-- no weird symbols inserted / added (EXCEPT hashtags, those are allowed only if they are already in the text)
-
-DO NOT CHANGE
-- the words themselves (only capitalization)
-- punctuation
-- emojis
-- structure
-- meaning
-
-OUTPUT
-- return ONLY the corrected tweet text, nothing else
+make my tweet better 
 
 INPUT
 Tweet to fix: {TWEET_TEXT}
+
+OUTPUT
+Return ONLY the tweet. NO explanations, NO rules commentary, NO meta-text. Just the tweet itself.
+

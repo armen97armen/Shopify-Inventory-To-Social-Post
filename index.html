@@ -291,6 +291,65 @@
                     </div>
                 </div>
             </div>
+
+            <!-- AI Prompts Section -->
+            <div class="mb-8 pb-8 border-b border-white/20">
+                <div class="flex items-center gap-3 mb-5">
+                    <div class="w-11 h-11 rounded-xl bg-purple-500/20 border border-purple-500/30 flex items-center justify-center">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-purple-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                        </svg>
+                    </div>
+                    <div>
+                        <h3 class="text-xl font-bold text-white tracking-tight">AI Prompts</h3>
+                        <p class="text-white/70 text-xs mt-0.5">Customize AI behavior by editing prompt templates</p>
+                    </div>
+                </div>
+
+                <div class="ml-14 space-y-5">
+                    <!-- GPT Generation Prompt -->
+                    <div>
+                        <label for="gptGenerationPrompt" class="block mb-2.5 text-white font-semibold text-sm tracking-tight">
+                            Tweet Generation Prompt
+                        </label>
+                        <textarea 
+                            id="gptGenerationPrompt"
+                            rows="12"
+                            class="w-full px-4 py-3.5 bg-chrome-accent border border-white/30 rounded-xl text-white text-sm placeholder-white/50 focus:outline-none focus:ring-2 focus:ring-purple-500/60 focus:border-purple-500/50 transition-all backdrop-blur-sm font-mono text-xs"
+                            style="font-family: 'Courier New', monospace; resize: vertical;"
+                        ></textarea>
+                        <p class="mt-2.5 text-white/75 text-xs leading-relaxed">Prompt used by GPT-5-Nano to generate tweets. Variables: {X_PROFILE_LINK}, {EXTRACTED_TWEETS}, {MAX_TWEET_LENGTH}</p>
+                    </div>
+
+                    <!-- Capitalization Prompt -->
+                    <div>
+                        <label for="capitalizationPrompt" class="block mb-2.5 text-white font-semibold text-sm tracking-tight">
+                            Capitalization Prompt
+                        </label>
+                        <textarea 
+                            id="capitalizationPrompt"
+                            rows="12"
+                            class="w-full px-4 py-3.5 bg-chrome-accent border border-white/30 rounded-xl text-white text-sm placeholder-white/50 focus:outline-none focus:ring-2 focus:ring-purple-500/60 focus:border-purple-500/50 transition-all backdrop-blur-sm font-mono text-xs"
+                            style="font-family: 'Courier New', monospace; resize: vertical;"
+                        ></textarea>
+                        <p class="mt-2.5 text-white/75 text-xs leading-relaxed">Prompt used by GPT-5-Nano to fix capitalization. Variable: {TWEET_TEXT}</p>
+                    </div>
+
+                    <!-- Style Analysis Prompt -->
+                    <div>
+                        <label for="styleAnalysisPrompt" class="block mb-2.5 text-white font-semibold text-sm tracking-tight">
+                            Style Analysis Prompt
+                        </label>
+                        <textarea 
+                            id="styleAnalysisPrompt"
+                            rows="12"
+                            class="w-full px-4 py-3.5 bg-chrome-accent border border-white/30 rounded-xl text-white text-sm placeholder-white/50 focus:outline-none focus:ring-2 focus:ring-purple-500/60 focus:border-purple-500/50 transition-all backdrop-blur-sm font-mono text-xs"
+                            style="font-family: 'Courier New', monospace; resize: vertical;"
+                        ></textarea>
+                        <p class="mt-2.5 text-white/75 text-xs leading-relaxed">Prompt used by Grok-4 to analyze writing style from X profile. Variable: {X_PROFILE_LINK}</p>
+                    </div>
+                </div>
+            </div>
             
             <!-- Action Buttons -->
             <div class="flex gap-4 pt-6 border-t border-white/20">
@@ -502,12 +561,27 @@
             // Pre-fill input fields
             initializeSettingsFields();
 
+            // Load prompts from server
+            function loadPrompts() {
+                fetch('prompts_handler.php')
+                    .then(response => response.json())
+                    .then(data => {
+                        if (data.success && data.prompts) {
+                            $('#gptGenerationPrompt').val(data.prompts.gptGeneration || '');
+                            $('#capitalizationPrompt').val(data.prompts.capitalization || '');
+                            $('#styleAnalysisPrompt').val(data.prompts.styleAnalysis || '');
+                        }
+                    })
+                    .catch(error => console.warn('Could not load prompts:', error));
+            }
+
             // Settings panel toggle
             $('#settingsBtn').on('click', function() {
                 $('#settingsPanel').toggleClass('hidden');
                 if (!$('#settingsPanel').hasClass('hidden')) {
                     // Refresh values when opening panel
                     initializeSettingsFields();
+                    loadPrompts();
                 }
             });
 
@@ -530,8 +604,30 @@
                     localStorage.setItem('twitterAccessToken', twitterAccessToken);
                     localStorage.setItem('twitterAccessSecret', twitterAccessSecret);
 
-                    $('#settingsPanel').addClass('hidden');
-                    showNotification('Settings saved successfully!', 'success');
+                    // Save prompts to server
+                    const formData = new FormData();
+                    formData.append('gptGeneration', $('#gptGenerationPrompt').val());
+                    formData.append('capitalization', $('#capitalizationPrompt').val());
+                    formData.append('styleAnalysis', $('#styleAnalysisPrompt').val());
+
+                    fetch('prompts_handler.php', {
+                        method: 'POST',
+                        body: formData
+                    })
+                    .then(response => response.json())
+                    .then(data => {
+                        if (data.success) {
+                            $('#settingsPanel').addClass('hidden');
+                            showNotification('Settings and prompts saved successfully!', 'success');
+                        } else {
+                            showNotification('Settings saved, but failed to save prompts. Please try again.', 'error');
+                        }
+                    })
+                    .catch(error => {
+                        console.error('Error saving prompts:', error);
+                        $('#settingsPanel').addClass('hidden');
+                        showNotification('Settings saved, but failed to save prompts. Please try again.', 'error');
+                    });
                 } else {
                     alert('Please enter a valid X Profile URL');
                 }
@@ -546,6 +642,8 @@
                 $('#twitterApiSecret').val(twitterApiSecret);
                 $('#twitterAccessToken').val(twitterAccessToken);
                 $('#twitterAccessSecret').val(twitterAccessSecret);
+                // Reload prompts to reset any changes
+                loadPrompts();
                 $('#settingsPanel').addClass('hidden');
             });
 

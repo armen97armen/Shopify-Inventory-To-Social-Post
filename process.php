@@ -55,6 +55,11 @@ try {
     $productData = scrapeShopify($shopifyUrl);
     
     // Step 3: Generate tweet with comprehensive prompt using GPT-5-Nano
+    // Calculate dynamic character limit based on link length
+    // Total limit is 270, minus link length, minus 2 for double newline
+    $linkLength = mb_strlen($shopifyUrl);
+    $maxTweetLength = 270 - $linkLength - 2; // 270 total limit - link - double newline
+    
     $tweetPrompt = trim(file_get_contents('prompts/gpt_generation_prompt.txt'));
     
     // Replace the X profile link variable in the prompt template with the user's setting
@@ -62,6 +67,9 @@ try {
     
     // Replace the extracted tweets variable with the style analysis
     $tweetPrompt = str_replace('{EXTRACTED_TWEETS}', $styleAnalysis, $tweetPrompt);
+    
+    // Replace the dynamic max length variable with calculated value
+    $tweetPrompt = str_replace('{MAX_TWEET_LENGTH}', (string)$maxTweetLength, $tweetPrompt);
     
     $rawAIOutput = callGPTNanoAPI($tweetPrompt, $productData['image'], $activeReplicateToken);
     
@@ -79,19 +87,6 @@ try {
     // Remove link if AI accidentally included it, then add it properly at the end
     $capitalizedTweet = preg_replace('/\s*' . preg_quote($shopifyUrl, '/') . '\s*/i', '', $capitalizedTweet);
     $capitalizedTweet = trim($capitalizedTweet) . "\n\n" . $shopifyUrl;
-    
-    // Calculate total length including newlines (newlines count as 2 chars each on Twitter)
-    $newlineCount = substr_count($capitalizedTweet, "\n");
-    $totalLength = mb_strlen($capitalizedTweet) + ($newlineCount * 1); // Newlines count as 2 chars, but we already counted them once
-    
-    // If over 280, truncate the tweet part but keep the link
-    if ($totalLength > 280) {
-        $linkLength = mb_strlen($shopifyUrl) + 2; // +2 for the double newline
-        $maxTweetLength = 280 - $linkLength;
-        $tweetPart = mb_substr($capitalizedTweet, 0, mb_strrpos($capitalizedTweet, "\n\n"));
-        $tweetPart = mb_substr($tweetPart, 0, $maxTweetLength);
-        $capitalizedTweet = trim($tweetPart) . "\n\n" . $shopifyUrl;
-    }
     
     $generatedTweet = $capitalizedTweet;
     

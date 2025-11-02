@@ -5,20 +5,21 @@ Here is the writing style analysis for this profile:
 {EXTRACTED_TWEETS}
 
 CRITICAL RULES:
-1. Keep it UNDER 240 CHARACTERS - no extra words, only essentials
+1. MUST be EXACTLY {MAX_TWEET_LENGTH} characters or LESS - this is a hard limit, no exceptions. Count carefully. The link will be added separately.
 2. Include 2-3 emojis
 3. Natural punctuation and spacing
 4. Match the writing style, tone, voice, syntax, diction, and rhetorical patterns described in the style analysis above
 5. Use the generative template from SECTION 4 as a guide for the structure and style
+6. Be concise - remove unnecessary words if needed to stay under {MAX_TWEET_LENGTH} characters
+
 
 IMPORTANT: Look carefully at the product image. Extract and include:
-- Prices, discounts, percentages (like 20% OFF, $99.99, etc.)
+- Prices, discounts, percentages
 - Sale prices and original prices if visible
 - Any numbers related to deals, savings, or promotions
-- Product quantities, sizes, or specifications if relevant
 - Any promotional codes or discount amounts shown in the image
 
 Make sure to include these numbers naturally in the tweet as part of the promotional message.
 
-Return ONLY the tweet text. NO explanations, NO rules commentary, NO meta-text. Just the tweet itself.
+Return ONLY the tweet. NO explanations, NO rules commentary, NO meta-text. Just the tweet itself.
 
