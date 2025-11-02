@@ -1,14 +1,15 @@
 /* Light Theme - Clean Modern Theme */
+/* Uses same CSS variable names as dark theme for compatibility */
 :root {
-    /* Base Colors */
-    --color-white-base: #ffffff;
-    --color-light-gray: #f5f5f5;
-    --color-glass-light: #ffffff;
-    --color-chrome-light: #f8f8f8;
+    /* Base Colors - Override dark theme variables */
+    --color-black-void: #ffffff;
+    --color-dark-carbon: #f5f5f5;
+    --color-glass-dark: #ffffff;
+    --color-chrome-accent: #f8f8f8;
     
-    /* Accent Colors */
-    --color-accent-blue: #0066cc;
-    --color-accent-pink: #cc0066;
+    /* Neon Accents - Adjusted for light mode */
+    --color-neon-blue: #0066cc;
+    --color-neon-pink: #cc0066;
     
     /* Text Colors */
     --color-text-primary: #1a1a1a;
@@ -17,10 +18,10 @@
     --color-text-muted: rgba(26, 26, 26, 0.4);
     
     /* Backgrounds */
-    --bg-primary: var(--color-white-base);
-    --bg-secondary: var(--color-light-gray);
+    --bg-primary: var(--color-black-void);
+    --bg-secondary: var(--color-dark-carbon);
     --bg-glass: rgba(255, 255, 255, 0.9);
-    --bg-accent: var(--color-chrome-light);
+    --bg-accent: var(--color-chrome-accent);
     
     /* Borders */
     --border-color: rgba(0, 0, 0, 0.1);
@@ -35,4 +36,3 @@ body {
     background: var(--bg-primary);
     color: var(--color-text-primary);
 }
-
