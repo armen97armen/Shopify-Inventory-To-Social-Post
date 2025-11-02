@@ -9,7 +9,6 @@
     <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="css/base.css">
     <link id="theme-stylesheet" rel="stylesheet" href="themes/dark.css">
-    <script src="config/settings.default.js"></script>
     <style>
         @keyframes orbit-spin {
             0% { transform: rotate(0deg); }
@@ -446,36 +445,69 @@
                 setTheme(newTheme);
             });
 
-            // Load default values from settings.default.js
-            const defaults = DEFAULT_SETTINGS;
+            // Load default settings from JSON file
+            let defaultSettings = {
+                xProfileLink: 'https://x.com/dope_as_yola',
+                replicateToken: 'YOUR_REPLICATE_API_TOKEN_HERE',
+                twitterApiKey: 'YOUR_TWITTER_API_KEY_HERE',
+                twitterApiSecret: 'YOUR_TWITTER_API_SECRET_HERE',
+                twitterAccessToken: 'YOUR_TWITTER_ACCESS_TOKEN_HERE',
+                twitterAccessSecret: 'YOUR_TWITTER_ACCESS_SECRET_HERE'
+            };
+
+            // Fetch settings from JSON (async, but will update if available)
+            fetch('config/settings.default.json')
+                .then(response => response.json())
+                .then(data => {
+                    defaultSettings = {
+                        xProfileLink: data.contentGeneration?.xProfileLink || defaultSettings.xProfileLink,
+                        replicateToken: data.replicate?.apiToken || defaultSettings.replicateToken,
+                        twitterApiKey: data.twitter?.apiKey || defaultSettings.twitterApiKey,
+                        twitterApiSecret: data.twitter?.apiSecret || defaultSettings.twitterApiSecret,
+                        twitterAccessToken: data.twitter?.accessToken || defaultSettings.twitterAccessToken,
+                        twitterAccessSecret: data.twitter?.accessSecret || defaultSettings.twitterAccessSecret
+                    };
+                    // Update input fields if settings panel is already open
+                    if (!$('#settingsPanel').hasClass('hidden')) {
+                        initializeSettingsFields();
+                    }
+                })
+                .catch(error => console.warn('Could not load settings.default.json, using fallback defaults:', error));
+
+            // Initialize settings fields with values
+            function initializeSettingsFields() {
+                let xProfileLink = localStorage.getItem('xProfileLink') || defaultSettings.xProfileLink;
+                let replicateToken = localStorage.getItem('replicateToken') || defaultSettings.replicateToken;
+                let twitterApiKey = localStorage.getItem('twitterApiKey') || defaultSettings.twitterApiKey;
+                let twitterApiSecret = localStorage.getItem('twitterApiSecret') || defaultSettings.twitterApiSecret;
+                let twitterAccessToken = localStorage.getItem('twitterAccessToken') || defaultSettings.twitterAccessToken;
+                let twitterAccessSecret = localStorage.getItem('twitterAccessSecret') || defaultSettings.twitterAccessSecret;
+
+                $('#xProfileLink').val(xProfileLink);
+                $('#replicateToken').val(replicateToken);
+                $('#twitterApiKey').val(twitterApiKey);
+                $('#twitterApiSecret').val(twitterApiSecret);
+                $('#twitterAccessToken').val(twitterAccessToken);
+                $('#twitterAccessSecret').val(twitterAccessSecret);
+            }
 
             // Load saved values from localStorage, fallback to defaults
-            let xProfileLink = localStorage.getItem('xProfileLink') || defaults.xProfileLink;
-            let replicateToken = localStorage.getItem('replicateToken') || defaults.replicateToken;
-            let twitterApiKey = localStorage.getItem('twitterApiKey') || defaults.twitterApiKey;
-            let twitterApiSecret = localStorage.getItem('twitterApiSecret') || defaults.twitterApiSecret;
-            let twitterAccessToken = localStorage.getItem('twitterAccessToken') || defaults.twitterAccessToken;
-            let twitterAccessSecret = localStorage.getItem('twitterAccessSecret') || defaults.twitterAccessSecret;
+            let xProfileLink = localStorage.getItem('xProfileLink') || defaultSettings.xProfileLink;
+            let replicateToken = localStorage.getItem('replicateToken') || defaultSettings.replicateToken;
+            let twitterApiKey = localStorage.getItem('twitterApiKey') || defaultSettings.twitterApiKey;
+            let twitterApiSecret = localStorage.getItem('twitterApiSecret') || defaultSettings.twitterApiSecret;
+            let twitterAccessToken = localStorage.getItem('twitterAccessToken') || defaultSettings.twitterAccessToken;
+            let twitterAccessSecret = localStorage.getItem('twitterAccessSecret') || defaultSettings.twitterAccessSecret;
 
             // Pre-fill input fields
-            $('#xProfileLink').val(xProfileLink);
-            $('#replicateToken').val(replicateToken);
-            $('#twitterApiKey').val(twitterApiKey);
-            $('#twitterApiSecret').val(twitterApiSecret);
-            $('#twitterAccessToken').val(twitterAccessToken);
-            $('#twitterAccessSecret').val(twitterAccessSecret);
+            initializeSettingsFields();
 
             // Settings panel toggle
             $('#settingsBtn').on('click', function() {
                 $('#settingsPanel').toggleClass('hidden');
                 if (!$('#settingsPanel').hasClass('hidden')) {
                     // Refresh values when opening panel
-                    $('#xProfileLink').val(xProfileLink);
-                    $('#replicateToken').val(replicateToken);
-                    $('#twitterApiKey').val(twitterApiKey);
-                    $('#twitterApiSecret').val(twitterApiSecret);
-                    $('#twitterAccessToken').val(twitterAccessToken);
-                    $('#twitterAccessSecret').val(twitterAccessSecret);
+                    initializeSettingsFields();
                 }
             });
 
@@ -484,11 +516,11 @@
                 const newLink = $('#xProfileLink').val().trim();
                 if (newLink && isValidUrl(newLink)) {
                     xProfileLink = newLink;
-                    replicateToken = $('#replicateToken').val().trim() || defaults.replicateToken;
-                    twitterApiKey = $('#twitterApiKey').val().trim() || defaults.twitterApiKey;
-                    twitterApiSecret = $('#twitterApiSecret').val().trim() || defaults.twitterApiSecret;
-                    twitterAccessToken = $('#twitterAccessToken').val().trim() || defaults.twitterAccessToken;
-                    twitterAccessSecret = $('#twitterAccessSecret').val().trim() || defaults.twitterAccessSecret;
+                    replicateToken = $('#replicateToken').val().trim() || defaultSettings.replicateToken;
+                    twitterApiKey = $('#twitterApiKey').val().trim() || defaultSettings.twitterApiKey;
+                    twitterApiSecret = $('#twitterApiSecret').val().trim() || defaultSettings.twitterApiSecret;
+                    twitterAccessToken = $('#twitterAccessToken').val().trim() || defaultSettings.twitterAccessToken;
+                    twitterAccessSecret = $('#twitterAccessSecret').val().trim() || defaultSettings.twitterAccessSecret;
 
                     // Save to localStorage
                     localStorage.setItem('xProfileLink', xProfileLink);

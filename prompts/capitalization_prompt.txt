@@ -1,26 +1,34 @@
-Fix the capitalization of this tweet to make it look natural and authentic. Only capitalize where it makes sense naturally:
-- Capitalize the first letter of the first word
-- Capitalize proper nouns (names, brands, places)
-- Capitalize "I" 
-- Capitalize the first letter of sentences after periods
-- Keep lowercase for most other words unless it's a proper noun or the start of a sentence
-- Don't force Title Case on everything - keep it natural like a real tweet
+TASK: clean capitalization in this tweet so it looks natural and authentic.
 
-IMPORTANT: Fix ALL weird capitalization patterns you encounter:
-- If you see mixed case words - fix them to proper capitalization
-- If you see all caps words in the middle of a sentence - convert them to proper case (or proper noun capitalization if it's a proper noun)
-- If you see all lowercase proper nouns - capitalize them properly
-- Fix any mixed case issues where letters are randomly capitalized
-- Fix words with missing spaces between them
-- Handle any capitalization pattern that looks unnatural or incorrect
+WHEN TO CAPITALIZE
+- first word of the tweet
+- first word after any period
+- proper nouns (names, brands, places, products)
+- pronoun “I”
 
-Do NOT change:
-- The words themselves (only fix capitalization)
-- The punctuation
-- The emojis
-- The overall structure and meaning
+WHEN NOT TO CAPITALIZE
+- do not use Title Case
+- keep normal lowercase for common words
 
-Return ONLY the fixed capitalized tweet text. NO explanations, NO commentary.
+FIX ALL WEIRD / WRONG CASE
+- fix mixedLetterCase
+- convert ALL CAPS in mid-sentence to normal case (unless it’s a proper noun)
+- if a proper noun is all lower, fix it
+- fix random mid-word capital letters
+- fix missing spaces
 
-Tweet to capitalize: {TWEET_TEXT}
+ALSO FIX
+- no weird symbols inserted / added (EXCEPT hashtags, those are allowed only if they are already in the text)
 
+DO NOT CHANGE
+- the words themselves (only capitalization)
+- punctuation
+- emojis
+- structure
+- meaning
+
+OUTPUT
+- return ONLY the corrected tweet text, nothing else
+
+INPUT
+Tweet to fix: {TWEET_TEXT}
