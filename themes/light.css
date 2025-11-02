@@ -1,13 +1,11 @@
 /* Light Theme - Clean Modern Theme */
-/* Uses same CSS variable names as dark theme for compatibility */
+/* All overrides use !important to override Tailwind classes */
 :root {
-    /* Base Colors - Override dark theme variables */
+    /* CSS variables for light theme */
     --color-black-void: #ffffff;
     --color-dark-carbon: #f5f5f5;
     --color-glass-dark: #ffffff;
     --color-chrome-accent: #f8f8f8;
-    
-    /* Neon Accents - Adjusted for light mode */
     --color-neon-blue: #0066cc;
     --color-neon-pink: #cc0066;
     
@@ -18,92 +16,30 @@
     --color-text-muted: rgba(26, 26, 26, 0.4);
     
     /* Backgrounds */
-    --bg-primary: var(--color-black-void);
-    --bg-secondary: var(--color-dark-carbon);
+    --bg-primary: #ffffff;
+    --bg-secondary: #f5f5f5;
     --bg-glass: rgba(255, 255, 255, 0.9);
-    --bg-accent: var(--color-chrome-accent);
+    --bg-accent: #f8f8f8;
     
     /* Borders */
     --border-color: rgba(0, 0, 0, 0.1);
     --border-accent: rgba(0, 0, 0, 0.2);
-    
-    /* Shadows */
-    --shadow-glow-blue: 0 0 20px rgba(0, 102, 204, 0.15);
-    --shadow-glow-pink: 0 0 20px rgba(204, 0, 102, 0.15);
 }
 
 body {
-    background: var(--bg-primary);
-    color: var(--color-text-primary);
-}
-
-/* Override text colors for light theme */
-body {
-    --tw-text-opacity: 1;
-}
-
-/* Ensure white text becomes dark in light mode */
-.text-white {
+    background: var(--bg-primary) !important;
     color: var(--color-text-primary) !important;
 }
 
-.text-white\/90 {
-    color: var(--color-text-secondary) !important;
+/* Override background colors */
+.bg-black-void {
+    background-color: #ffffff !important;
 }
 
-.text-white\/80 {
-    color: var(--color-text-secondary) !important;
+.bg-dark-carbon {
+    background-color: #f5f5f5 !important;
 }
 
-.text-white\/60 {
-    color: var(--color-text-tertiary) !important;
-}
-
-.text-white\/50 {
-    color: var(--color-text-muted) !important;
-}
-
-.text-white\/40 {
-    color: var(--color-text-muted) !important;
-}
-
-/* Override border colors */
-.border-white\/10 {
-    border-color: var(--border-color) !important;
-}
-
-.border-white\/20 {
-    border-color: var(--border-accent) !important;
-}
-
-.border-white\/5 {
-    border-color: var(--border-color) !important;
-}
-
-.border-white\/30 {
-    border-color: var(--border-accent) !important;
-}
-
-.border-white\/40 {
-    border-color: var(--border-accent) !important;
-}
-
-/* Override placeholder colors */
-.placeholder-white\/40::placeholder {
-    color: var(--color-text-muted) !important;
-}
-
-input::placeholder,
-textarea::placeholder {
-    color: var(--color-text-muted) !important;
-}
-
-/* Override gradient overlay */
-.bg-gradient-to-b {
-    background: linear-gradient(to bottom, var(--color-black-void), var(--color-dark-carbon), var(--color-black-void)) !important;
-}
-
-/* Override backdrop blur backgrounds */
 .bg-glass-dark\/40,
 .bg-glass-dark\/30,
 .bg-glass-dark\/60 {
@@ -113,18 +49,75 @@ textarea::placeholder {
 .bg-chrome-accent\/40,
 .bg-chrome-accent\/60,
 .bg-chrome-accent\/80 {
-    background-color: var(--bg-accent) !important;
+    background-color: #f8f8f8 !important;
 }
 
 .bg-black-void\/60 {
     background-color: rgba(248, 248, 248, 0.9) !important;
 }
 
+/* Override text colors for light theme */
+.text-white {
+    color: #1a1a1a !important;
+}
+
+.text-white\/90 {
+    color: rgba(26, 26, 26, 0.9) !important;
+}
+
+.text-white\/80 {
+    color: rgba(26, 26, 26, 0.9) !important;
+}
+
+.text-white\/60 {
+    color: rgba(26, 26, 26, 0.6) !important;
+}
+
+.text-white\/50 {
+    color: rgba(26, 26, 26, 0.4) !important;
+}
+
+.text-white\/40 {
+    color: rgba(26, 26, 26, 0.4) !important;
+}
+
+/* Override border colors */
+.border-white\/10 {
+    border-color: rgba(0, 0, 0, 0.1) !important;
+}
+
+.border-white\/20 {
+    border-color: rgba(0, 0, 0, 0.2) !important;
+}
+
+.border-white\/5 {
+    border-color: rgba(0, 0, 0, 0.1) !important;
+}
+
+.border-white\/30 {
+    border-color: rgba(0, 0, 0, 0.2) !important;
+}
+
+.border-white\/40 {
+    border-color: rgba(0, 0, 0, 0.2) !important;
+}
+
+/* Override placeholder colors */
+input::placeholder,
+textarea::placeholder {
+    color: rgba(26, 26, 26, 0.4) !important;
+}
+
+/* Override gradient overlay */
+.bg-gradient-to-b {
+    background: linear-gradient(to bottom, #ffffff, #f5f5f5, #ffffff) !important;
+}
+
 /* Override neon colors in light mode */
 .text-neon-blue {
-    color: var(--color-neon-blue) !important;
+    color: #0066cc !important;
 }
 
 .text-neon-pink {
-    color: var(--color-neon-pink) !important;
+    color: #cc0066 !important;
 }

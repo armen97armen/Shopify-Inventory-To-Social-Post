@@ -1,12 +1,11 @@
 /* Dark Theme - Futuristic Space Theme */
+/* Default theme - no overrides needed, Tailwind config handles colors */
 :root {
-    /* Base Colors */
+    /* CSS variables for potential future use or JavaScript access */
     --color-black-void: #000000;
     --color-dark-carbon: #0a0a0a;
     --color-glass-dark: #1a1a1a;
     --color-chrome-accent: #2a2a2a;
-    
-    /* Neon Accents */
     --color-neon-blue: #0080ff;
     --color-neon-pink: #ff0080;
     
@@ -17,18 +16,14 @@
     --color-text-muted: rgba(255, 255, 255, 0.4);
     
     /* Backgrounds */
-    --bg-primary: var(--color-black-void);
-    --bg-secondary: var(--color-dark-carbon);
+    --bg-primary: #000000;
+    --bg-secondary: #0a0a0a;
     --bg-glass: rgba(26, 26, 26, 0.3);
-    --bg-accent: var(--color-chrome-accent);
+    --bg-accent: #2a2a2a;
     
     /* Borders */
     --border-color: rgba(255, 255, 255, 0.1);
     --border-accent: rgba(255, 255, 255, 0.2);
-    
-    /* Shadows */
-    --shadow-glow-blue: 0 0 20px rgba(0, 128, 255, 0.3);
-    --shadow-glow-pink: 0 0 20px rgba(255, 0, 128, 0.3);
 }
 
 body {
@@ -36,5 +31,5 @@ body {
     color: var(--color-text-primary);
 }
 
-/* Force Tailwind to use CSS variables */
+/* Dark theme is default - no overrides needed */
 
