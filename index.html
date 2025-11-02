@@ -309,21 +309,16 @@
         $(document).ready(function() {
             let generatedData = null;
 
-            // Default values from process.php and post.php
-            const defaultXProfileLink = 'https://x.com/dope_as_yola';
-            const defaultReplicateToken = 'YOUR_REPLICATE_API_TOKEN_HERE';
-            const defaultTwitterApiKey = 'YOUR_TWITTER_API_KEY_HERE';
-            const defaultTwitterApiSecret = 'YOUR_TWITTER_API_SECRET_HERE';
-            const defaultTwitterAccessToken = 'YOUR_TWITTER_ACCESS_TOKEN_HERE';
-            const defaultTwitterAccessSecret = 'YOUR_TWITTER_ACCESS_SECRET_HERE';
+            // Load default values from settings.default.js
+            const defaults = DEFAULT_SETTINGS;
 
             // Load saved values from localStorage, fallback to defaults
-            let xProfileLink = localStorage.getItem('xProfileLink') || defaultXProfileLink;
-            let replicateToken = localStorage.getItem('replicateToken') || defaultReplicateToken;
-            let twitterApiKey = localStorage.getItem('twitterApiKey') || defaultTwitterApiKey;
-            let twitterApiSecret = localStorage.getItem('twitterApiSecret') || defaultTwitterApiSecret;
-            let twitterAccessToken = localStorage.getItem('twitterAccessToken') || defaultTwitterAccessToken;
-            let twitterAccessSecret = localStorage.getItem('twitterAccessSecret') || defaultTwitterAccessSecret;
+            let xProfileLink = localStorage.getItem('xProfileLink') || defaults.xProfileLink;
+            let replicateToken = localStorage.getItem('replicateToken') || defaults.replicateToken;
+            let twitterApiKey = localStorage.getItem('twitterApiKey') || defaults.twitterApiKey;
+            let twitterApiSecret = localStorage.getItem('twitterApiSecret') || defaults.twitterApiSecret;
+            let twitterAccessToken = localStorage.getItem('twitterAccessToken') || defaults.twitterAccessToken;
+            let twitterAccessSecret = localStorage.getItem('twitterAccessSecret') || defaults.twitterAccessSecret;
 
             // Pre-fill input fields
             $('#xProfileLink').val(xProfileLink);
@@ -352,11 +347,11 @@
                 const newLink = $('#xProfileLink').val().trim();
                 if (newLink && isValidUrl(newLink)) {
                     xProfileLink = newLink;
-                    replicateToken = $('#replicateToken').val().trim() || defaultReplicateToken;
-                    twitterApiKey = $('#twitterApiKey').val().trim() || defaultTwitterApiKey;
-                    twitterApiSecret = $('#twitterApiSecret').val().trim() || defaultTwitterApiSecret;
-                    twitterAccessToken = $('#twitterAccessToken').val().trim() || defaultTwitterAccessToken;
-                    twitterAccessSecret = $('#twitterAccessSecret').val().trim() || defaultTwitterAccessSecret;
+                    replicateToken = $('#replicateToken').val().trim() || defaults.replicateToken;
+                    twitterApiKey = $('#twitterApiKey').val().trim() || defaults.twitterApiKey;
+                    twitterApiSecret = $('#twitterApiSecret').val().trim() || defaults.twitterApiSecret;
+                    twitterAccessToken = $('#twitterAccessToken').val().trim() || defaults.twitterAccessToken;
+                    twitterAccessSecret = $('#twitterAccessSecret').val().trim() || defaults.twitterAccessSecret;
 
                     // Save to localStorage
                     localStorage.setItem('xProfileLink', xProfileLink);
