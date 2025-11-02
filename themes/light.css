@@ -1,7 +1,7 @@
 /* Light Theme - Clean Modern Theme */
-/* All overrides use !important to override Tailwind classes */
+/* ONLY changes colors - everything else matches dark.css exactly */
 :root {
-    /* CSS variables for light theme */
+    /* CSS variables for light theme - ONLY colors changed */
     --color-black-void: #ffffff;
     --color-dark-carbon: #f5f5f5;
     --color-glass-dark: #ffffff;
@@ -29,11 +29,12 @@
 body {
     background: var(--bg-primary) !important;
     color: var(--color-text-primary) !important;
+    /* Match dark mode exactly for font and letter spacing */
     font-family: 'Inter', system-ui, sans-serif !important;
     letter-spacing: -0.02em !important;
 }
 
-/* Apply squeezed letter spacing to headings and buttons - match dark mode exactly */
+/* Match dark mode letter spacing EXACTLY */
 h1 {
     letter-spacing: -0.08em !important;
 }
@@ -46,11 +47,7 @@ button {
     letter-spacing: -0.02em !important;
 }
 
-body {
-    letter-spacing: -0.02em !important;
-}
-
-/* Override background colors */
+/* Override background colors for light mode */
 .bg-black-void {
     background-color: #ffffff !important;
 }
