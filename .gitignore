@@ -2,11 +2,8 @@
 vendor/
 composer.lock
 
-# Sensitive configuration files
-process.php
-post.php
+# Sensitive configuration files (only API keys)
 config/settings.default.json
-config/settings.default.js
 
 # IDE files
 .vscode/
