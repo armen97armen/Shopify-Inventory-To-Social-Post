@@ -413,6 +413,39 @@
         $(document).ready(function() {
             let generatedData = null;
 
+            // Theme Management
+            let currentTheme = localStorage.getItem('theme') || 'dark';
+            const themeStylesheet = $('#theme-stylesheet');
+            
+            function setTheme(theme) {
+                currentTheme = theme;
+                localStorage.setItem('theme', theme);
+                themeStylesheet.attr('href', `themes/${theme}.css`);
+                
+                if (theme === 'dark') {
+                    $('#sunIcon').removeClass('hidden');
+                    $('#moonIcon').addClass('hidden');
+                } else {
+                    $('#sunIcon').addClass('hidden');
+                    $('#moonIcon').removeClass('hidden');
+                }
+                
+                // Add transition class to body for smooth color changes
+                $('body').addClass('theme-transitioning');
+                setTimeout(() => {
+                    $('body').removeClass('theme-transitioning');
+                }, 300);
+            }
+            
+            // Initialize theme
+            setTheme(currentTheme);
+            
+            // Theme toggle handler - smooth transition without reload
+            $('#themeToggleBtn').on('click', function() {
+                const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
+                setTheme(newTheme);
+            });
+
             // Load default values from settings.default.js
             const defaults = DEFAULT_SETTINGS;
 
