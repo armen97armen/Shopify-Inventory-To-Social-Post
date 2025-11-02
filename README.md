@@ -36,17 +36,11 @@ A single-page web application that generates and posts promotional Twitter/X pos
    ```
 
 3. **Configure**:
-   ```bash
-   # Copy the example files and add your API credentials
-   cp process.php.example process.php
-   cp post.php.example post.php
-   
-   # Edit process.php and add your Replicate API token
-   # Edit post.php and add your Twitter/X API credentials
-   ```
-   
+   - Edit `config/settings.default.json` to set your API tokens, or configure them via the Settings panel in the UI
    - Get Replicate API token from: https://replicate.com/account/api-tokens
    - Get Twitter/X API credentials from: https://developer.twitter.com/en/portal/dashboard
+   
+   Note: `process.php` and `post.php` are in `.gitignore` for security. Create them from the actual `process.php` and `post.php` files (which read from `config/settings.default.json`) or configure tokens via the UI settings panel.
 
 ## Usage
 
@@ -67,10 +61,9 @@ A single-page web application that generates and posts promotional Twitter/X pos
 ├── composer.json           # Package configuration
 ├── .gitignore             # Git ignore rules
 ├── README.md              # This file
-├── config/
-│   └── examples/          # Example configuration files
-│       ├── process.php.example
-│       └── post.php.example
+├── config/                # Configuration files
+│   ├── settings.default.json  # Default settings (API tokens, X profile link)
+│   └── settings.default.js   # JavaScript settings loader
 ├── prompts/               # AI prompt templates
 │   ├── gpt_generation_prompt.txt
 │   ├── style_analysis_prompt.txt
