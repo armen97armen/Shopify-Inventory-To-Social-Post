@@ -33,7 +33,7 @@ body {
     letter-spacing: -0.02em !important;
 }
 
-/* Apply squeezed letter spacing to headings and buttons */
+/* Apply squeezed letter spacing to headings and buttons - match dark mode exactly */
 h1 {
     letter-spacing: -0.08em !important;
 }
@@ -43,6 +43,10 @@ h2, h3, h4, h5, h6 {
 }
 
 button {
+    letter-spacing: -0.02em !important;
+}
+
+body {
     letter-spacing: -0.02em !important;
 }
 
