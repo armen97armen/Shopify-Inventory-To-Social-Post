@@ -82,6 +82,50 @@ body {
     color: rgba(26, 26, 26, 0.4) !important;
 }
 
+/* EXCEPTION: Colored buttons (blue/pink) MUST have white text even in light mode */
+/* This must come AFTER the general .text-white override to take precedence */
+/* Target buttons with colored backgrounds - highest specificity */
+button.post-selected-btn.bg-neon-blue,
+button.post-selected-btn.bg-neon-blue.text-white,
+button.post-selected-btn.bg-neon-blue.text-white\/90,
+button.post-selected-btn.bg-neon-blue.text-white\/80,
+button.post-selected-btn.bg-neon-blue *,
+button.schedule-selected-btn.bg-neon-pink,
+button.schedule-selected-btn.bg-neon-pink.text-white,
+button.schedule-selected-btn.bg-neon-pink.text-white\/90,
+button.schedule-selected-btn.bg-neon-pink.text-white\/80,
+button.schedule-selected-btn.bg-neon-pink *,
+button[class*="bg-neon-blue"].post-selected-btn,
+button[class*="bg-neon-blue"].post-selected-btn *,
+button[class*="bg-neon-pink"].schedule-selected-btn,
+button[class*="bg-neon-pink"].schedule-selected-btn *,
+button.bg-neon-blue.post-selected-btn,
+button.bg-neon-blue.post-selected-btn *,
+button.bg-neon-pink.schedule-selected-btn,
+button.bg-neon-pink.schedule-selected-btn *,
+button.post-selected-btn[class*="bg-neon-blue"],
+button.post-selected-btn[class*="bg-neon-blue"] *,
+button.schedule-selected-btn[class*="bg-neon-pink"],
+button.schedule-selected-btn[class*="bg-neon-pink"] * {
+    color: #ffffff !important;
+}
+
+/* Also catch any button with bg-neon-blue or bg-neon-pink regardless of other classes */
+button[class*="bg-neon-blue"],
+button[class*="bg-neon-blue"]:hover,
+button[class*="bg-neon-blue"]:focus,
+button[class*="bg-neon-blue"]:active,
+button[class*="bg-neon-blue"]:disabled,
+button[class*="bg-neon-blue"] *,
+button[class*="bg-neon-pink"],
+button[class*="bg-neon-pink"]:hover,
+button[class*="bg-neon-pink"]:focus,
+button[class*="bg-neon-pink"]:active,
+button[class*="bg-neon-pink"]:disabled,
+button[class*="bg-neon-pink"] * {
+    color: #ffffff !important;
+}
+
 /* Override border colors */
 .border-white\/10 {
     border-color: rgba(0, 0, 0, 0.1) !important;
@@ -153,51 +197,57 @@ textarea::placeholder {
     box-shadow: 0 4px 15px rgba(0, 102, 204, 0.4) !important;
 }
 
-/* Settings Panel - Better contrast for light mode */
-#settingsPanel {
+/* Settings Modal - Light Mode */
+#settingsModal {
+    background-color: rgba(0, 0, 0, 0.4) !important;
+}
+
+#settingsModal > div {
     background: rgba(255, 255, 255, 0.95) !important;
     border-color: rgba(0, 0, 0, 0.15) !important;
 }
 
-#settingsPanel h2,
-#settingsPanel h3,
-#settingsPanel label,
-#settingsPanel strong {
+#settingsModal h2,
+#settingsModal h3,
+#settingsModal label,
+#settingsModal strong {
     color: #1a1a1a !important;
 }
 
-#settingsPanel p {
+#settingsModal p {
     color: rgba(26, 26, 26, 0.8) !important;
 }
 
-#settingsPanel input {
+#settingsModal input,
+#settingsModal textarea {
     background: #f8f8f8 !important;
     border-color: rgba(0, 0, 0, 0.2) !important;
     color: #1a1a1a !important;
 }
 
-#settingsPanel input::placeholder {
+#settingsModal input::placeholder,
+#settingsModal textarea::placeholder {
     color: rgba(26, 26, 26, 0.5) !important;
 }
 
-#settingsPanel .bg-chrome-accent,
-#settingsPanel .bg-chrome-accent\/60,
-#settingsPanel .bg-chrome-accent\/80 {
+#settingsModal .bg-chrome-accent,
+#settingsModal .bg-chrome-accent\/60,
+#settingsModal .bg-chrome-accent\/80 {
     background: #f0f0f0 !important;
     border-color: rgba(0, 0, 0, 0.15) !important;
 }
 
-#settingsPanel .border-white\/10,
-#settingsPanel .border-white\/20,
-#settingsPanel .border-white\/30 {
+#settingsModal .border-white\/10,
+#settingsModal .border-white\/20,
+#settingsModal .border-white\/30 {
     border-color: rgba(0, 0, 0, 0.15) !important;
 }
 
-#settingsPanel a {
+#settingsModal a {
     color: #0066cc !important;
 }
 
-#settingsPanel a:hover {
+#settingsModal a:hover {
     color: #0052a3 !important;
 }
 
@@ -209,4 +259,436 @@ textarea::placeholder {
 
 #cancelSettingsBtn:hover {
     background: #e5e5e5 !important;
+}
+
+/* Scheduling Modal - Light Mode */
+#scheduleModal {
+    background-color: rgba(0, 0, 0, 0.4) !important;
+}
+
+#scheduleModal > div {
+    background: rgba(255, 255, 255, 0.95) !important;
+    border-color: rgba(0, 0, 0, 0.15) !important;
+}
+
+#scheduleModal h2 {
+    color: #1a1a1a !important;
+}
+
+#scheduleModal label {
+    color: #1a1a1a !important;
+}
+
+#scheduleModal p {
+    color: rgba(26, 26, 26, 0.7) !important;
+}
+
+#scheduleModal input[type="datetime-local"] {
+    background: #f8f8f8 !important;
+    border-color: rgba(0, 0, 0, 0.2) !important;
+    color: #1a1a1a !important;
+}
+
+#scheduleModal input[type="datetime-local"]::-webkit-calendar-picker-indicator {
+    filter: invert(0.4);
+}
+
+#scheduleModal input[type="datetime-local"]::-webkit-datetime-edit-text,
+#scheduleModal input[type="datetime-local"]::-webkit-datetime-edit-month-field,
+#scheduleModal input[type="datetime-local"]::-webkit-datetime-edit-day-field,
+#scheduleModal input[type="datetime-local"]::-webkit-datetime-edit-year-field {
+    color: #1a1a1a !important;
+}
+
+#scheduleModal input[type="datetime-local"]:focus {
+    border-color: #0066cc !important;
+    background: #ffffff !important;
+}
+
+#confirmScheduleBtn {
+    background-color: #0066cc !important;
+    color: #ffffff !important;
+    border: 1px solid rgba(0, 102, 204, 0.3) !important;
+}
+
+#confirmScheduleBtn:hover {
+    background-color: #0052a3 !important;
+    box-shadow: 0 4px 15px rgba(0, 102, 204, 0.4) !important;
+}
+
+#cancelScheduleBtn {
+    background: #f0f0f0 !important;
+    border-color: rgba(0, 0, 0, 0.2) !important;
+    color: #1a1a1a !important;
+}
+
+#cancelScheduleBtn:hover {
+    background: #e5e5e5 !important;
+}
+
+/* Right Side Panel - Light Mode */
+#rightSide {
+    background-color: #ffffff !important;
+    border-left-color: rgba(0, 0, 0, 0.1) !important;
+}
+
+#rightSide .sticky {
+    background-color: rgba(255, 255, 255, 0.95) !important;
+    border-bottom-color: rgba(0, 0, 0, 0.1) !important;
+}
+
+#rightSide h2 {
+    color: #1a1a1a !important;
+}
+
+#rightSide p {
+    color: rgba(26, 26, 26, 0.6) !important;
+}
+
+.tweet-option {
+    background-color: #ffffff !important;
+    border-color: rgba(0, 0, 0, 0.1) !important;
+}
+
+.tweet-option:hover {
+    border-color: rgba(0, 0, 0, 0.2) !important;
+}
+
+.tweet-option .text-white {
+    color: #1a1a1a !important;
+}
+
+.tweet-option .text-white\/60,
+.tweet-option .text-white\/40 {
+    color: rgba(26, 26, 26, 0.6) !important;
+}
+
+.tweet-option .border-white\/10 {
+    border-color: rgba(0, 0, 0, 0.1) !important;
+}
+
+.tweet-option .border-white\/20 {
+    border-color: rgba(0, 0, 0, 0.15) !important;
+}
+
+/* GENERAL RULE: ANY button with colored background (blue/pink) MUST have white text */
+/* This catches ALL buttons with bg-neon-blue or bg-neon-pink classes */
+button[class*="bg-neon-blue"],
+button[class*="bg-neon-blue"]:hover,
+button[class*="bg-neon-blue"]:focus,
+button[class*="bg-neon-blue"]:active,
+button[class*="bg-neon-blue"]:disabled,
+button[class*="bg-neon-blue"] *,
+button[class*="bg-neon-pink"],
+button[class*="bg-neon-pink"]:hover,
+button[class*="bg-neon-pink"]:focus,
+button[class*="bg-neon-pink"]:active,
+button[class*="bg-neon-pink"]:disabled,
+button[class*="bg-neon-pink"] * {
+    color: #ffffff !important;
+}
+
+/* Generated History Section - Light Mode */
+#tweetsHistory {
+    border-top-color: rgba(0, 0, 0, 0.1) !important;
+}
+
+#tweetsHistory h3 {
+    color: #1a1a1a !important;
+}
+
+#tweetsHistory button,
+#historyModal #tweetsHistoryList button.history-post-btn,
+#historyModal #tweetsHistoryList button.history-schedule-btn {
+    border-color: rgba(0, 0, 0, 0.2) !important;
+    color: rgba(26, 26, 26, 0.7) !important;
+}
+
+#tweetsHistory button:hover,
+#historyModal #tweetsHistoryList button.history-post-btn:hover,
+#historyModal #tweetsHistoryList button.history-schedule-btn:hover {
+    border-color: rgba(0, 0, 0, 0.4) !important;
+    color: #1a1a1a !important;
+}
+
+#tweetsHistoryList .bg-black-void\/40,
+#tweetsHistoryList [class*="from-black-void"] {
+    background: linear-gradient(to bottom right, rgba(255, 255, 255, 0.7), rgba(248, 248, 248, 0.6), rgba(255, 255, 255, 0.7)) !important;
+    border-color: rgba(0, 0, 0, 0.1) !important;
+}
+
+#tweetsHistoryList [class*="from-black-void"]:hover {
+    border-color: rgba(0, 0, 0, 0.15) !important;
+}
+
+#tweetsHistoryList .text-white {
+    color: #1a1a1a !important;
+}
+
+#tweetsHistoryList .text-white\/50,
+#tweetsHistoryList .text-white\/40 {
+    color: rgba(26, 26, 26, 0.5) !important;
+}
+
+/* Posted tweet styling in light mode */
+#tweetsHistoryList [class*="from-neon-blue"] {
+    background: linear-gradient(to bottom right, rgba(0, 102, 204, 0.08), rgba(255, 255, 255, 0.7), rgba(0, 102, 204, 0.08)) !important;
+    border-color: rgba(0, 102, 204, 0.3) !important;
+}
+
+#tweetsHistoryList [class*="from-neon-blue"]:hover {
+    border-color: rgba(0, 102, 204, 0.4) !important;
+}
+
+/* Posted badge in light mode */
+#tweetsHistoryList [class*="from-neon-blue"][class*="to-neon-blue"] .absolute {
+    background: linear-gradient(to bottom right, rgba(0, 102, 204, 0.25), rgba(0, 102, 204, 0.15)) !important;
+    border-color: rgba(0, 102, 204, 0.5) !important;
+}
+
+#tweetsHistoryList [class*="from-neon-blue"] .text-neon-blue {
+    color: #0066cc !important;
+}
+
+/* Image border in light mode for posted tweets */
+#tweetsHistoryList [class*="from-neon-blue"] img[alt="Product Image"] {
+    border-color: rgba(0, 102, 204, 0.25) !important;
+}
+
+/* Border top in light mode */
+#tweetsHistoryList [class*="border-neon-blue"] {
+    border-color: rgba(0, 102, 204, 0.2) !important;
+}
+
+/* Posted buttons styling in light mode */
+#tweetsHistoryList .history-post-btn.bg-neon-blue\/20 {
+    background-color: rgba(0, 102, 204, 0.15) !important;
+    border-color: rgba(0, 102, 204, 0.3) !important;
+    color: #0066cc !important;
+}
+
+#tweetsHistoryList .history-schedule-btn.bg-glass-dark\/20 {
+    background-color: rgba(248, 248, 248, 0.8) !important;
+    border-color: rgba(0, 0, 0, 0.1) !important;
+    color: rgba(26, 26, 26, 0.3) !important;
+}
+
+#tweetsHistoryEmpty .text-white\/40 {
+    color: rgba(26, 26, 26, 0.4) !important;
+}
+
+/* Tweet Preview Empty State - Light Mode */
+#tweetsContainer .text-white\/60,
+#tweetsContainer .text-white\/40,
+#tweetsContainer p.text-white\/60 {
+    color: rgba(26, 26, 26, 0.6) !important;
+}
+
+#tweetsContainer .text-white\/20,
+#tweetsContainer svg.text-white\/20 {
+    color: rgba(26, 26, 26, 0.3) !important;
+}
+
+#tweetsContainer .text-white {
+    color: rgba(26, 26, 26, 0.8) !important;
+}
+
+#tweetsContainer .text-red-400 {
+    color: #dc2626 !important;
+}
+
+/* Loading dots in light mode */
+#tweetsContainer .bg-neon-blue {
+    background-color: var(--color-neon-blue) !important;
+}
+
+/* Generated History Modal - Light Mode */
+#historyModal {
+    background-color: rgba(0, 0, 0, 0.4) !important;
+}
+
+#historyModal > div {
+    background: rgba(255, 255, 255, 0.95) !important;
+    border-color: rgba(0, 0, 0, 0.15) !important;
+}
+
+#historyModal h2,
+#historyModal h3,
+#historyModal p {
+    color: #1a1a1a !important;
+}
+
+#historyModal .text-white\/80 {
+    color: rgba(26, 26, 26, 0.8) !important;
+}
+
+#historyModal .text-white\/40 {
+    color: rgba(26, 26, 26, 0.4) !important;
+}
+
+#historyModal .text-white\/30 {
+    color: rgba(26, 26, 26, 0.3) !important;
+}
+
+#historyModal button {
+    border-color: rgba(0, 0, 0, 0.2) !important;
+}
+
+#historyModal svg.text-white\/20 {
+    color: rgba(26, 26, 26, 0.3) !important;
+}
+
+/* History modal buttons - black text in light mode */
+#historyModal .history-post-btn,
+#historyModal .history-post-btn:hover,
+#historyModal .history-post-btn:focus,
+#historyModal .history-post-btn:active,
+#historyModal .history-schedule-btn,
+#historyModal .history-schedule-btn:hover,
+#historyModal .history-schedule-btn:focus,
+#historyModal .history-schedule-btn:active {
+    color: #1a1a1a !important;
+}
+
+#historyModal #tweetsHistoryList .history-post-btn,
+#historyModal #tweetsHistoryList .history-schedule-btn {
+    color: #1a1a1a !important;
+}
+
+#historyModal #tweetsHistoryList .history-post-btn:hover,
+#historyModal #tweetsHistoryList .history-schedule-btn:hover {
+    color: #1a1a1a !important;
+}
+
+/* Tweet Wireframes - Light Mode */
+.tweet-wireframe {
+    background: linear-gradient(to bottom right, #ffffff, #fafafa, #ffffff) !important;
+    border-color: rgba(0, 0, 0, 0.1) !important;
+}
+
+.tweet-wireframe:hover {
+    border-color: rgba(0, 0, 0, 0.15) !important;
+}
+
+.tweet-wireframe .text-white\/90,
+.tweet-wireframe .text-white\/80 {
+    color: rgba(26, 26, 26, 0.9) !important;
+}
+
+.tweet-wireframe .text-white\/60,
+.tweet-wireframe .text-white\/50 {
+    color: rgba(26, 26, 26, 0.6) !important;
+}
+
+.tweet-wireframe .text-white\/40,
+.tweet-wireframe .text-white\/30 {
+    color: rgba(26, 26, 26, 0.4) !important;
+}
+
+/* Wireframe skeleton loaders - use dark colors in light mode */
+.tweet-wireframe .bg-white\/10,
+.tweet-wireframe .bg-white\/5,
+.tweet-wireframe .bg-white\/20,
+.tweet-wireframe .bg-white\/3 {
+    background: rgba(0, 0, 0, 0.12) !important;
+    background-image: linear-gradient(to right, rgba(0, 0, 0, 0.08), rgba(0, 0, 0, 0.18), rgba(0, 0, 0, 0.08)) !important;
+    background-size: 200% 100% !important;
+}
+
+/* Ensure shimmer effect works on skeleton lines - target the gradient classes */
+.tweet-wireframe [class*="bg-gradient-to-r"][class*="from-white"][class*="via-white"][class*="to-white"],
+.tweet-wireframe .bg-gradient-to-r.from-white\/10.via-white\/20.to-white\/10 {
+    background: linear-gradient(to right, rgba(0, 0, 0, 0.1), rgba(0, 0, 0, 0.2), rgba(0, 0, 0, 0.1)) !important;
+    background-size: 200% 100% !important;
+}
+
+/* More specific selector for the skeleton content lines - target by class attributes */
+.tweet-wireframe div[class*="bg-gradient-to-r"],
+.tweet-wireframe .space-y-3 div,
+.tweet-wireframe div.h-5[class*="bg-gradient"] {
+    background: linear-gradient(to right, rgba(0, 0, 0, 0.12), rgba(0, 0, 0, 0.22), rgba(0, 0, 0, 0.12)) !important;
+    background-size: 200% 100% !important;
+}
+
+/* Ensure height is maintained */
+.tweet-wireframe div.h-5 {
+    background-color: rgba(0, 0, 0, 0.12) !important;
+}
+
+/* Override any white background specifically */
+.tweet-wireframe div[class*="from-white"] {
+    background: linear-gradient(to right, rgba(0, 0, 0, 0.12), rgba(0, 0, 0, 0.22), rgba(0, 0, 0, 0.12)) !important;
+    background-size: 200% 100% !important;
+}
+
+.tweet-wireframe .border-white\/10 {
+    border-color: rgba(0, 0, 0, 0.08) !important;
+}
+
+.tweet-wireframe .bg-gradient-to-br.from-white\/5 {
+    background: linear-gradient(to bottom right, rgba(0, 0, 0, 0.03), rgba(0, 0, 0, 0.02), rgba(0, 0, 0, 0.03)) !important;
+}
+
+.tweet-wireframe .bg-gradient-to-br.from-white\/5.via-white\/3.to-white\/5 {
+    background: linear-gradient(to bottom right, rgba(0, 0, 0, 0.03), rgba(0, 0, 0, 0.02), rgba(0, 0, 0, 0.03)) !important;
+}
+
+/* Wireframe image loader background */
+.tweet-wireframe .bg-gradient-to-br.from-neon-blue\/5.via-transparent.to-neon-pink\/5 {
+    background: linear-gradient(to bottom right, rgba(0, 102, 204, 0.03), transparent, rgba(204, 0, 102, 0.03)) !important;
+}
+
+/* Wireframe gradient overlay at bottom */
+.tweet-wireframe .bg-gradient-to-t.from-black\/60 {
+    background: linear-gradient(to top, rgba(255, 255, 255, 0.6), rgba(255, 255, 255, 0.3), transparent) !important;
+}
+
+/* Wireframe avatar - lighter in light mode */
+.tweet-wireframe .bg-gradient-to-br.from-neon-blue\/30.to-neon-blue\/10 {
+    background: linear-gradient(to bottom right, rgba(0, 102, 204, 0.15), rgba(0, 102, 204, 0.08)) !important;
+}
+
+.tweet-wireframe .border-neon-blue\/40 {
+    border-color: rgba(0, 102, 204, 0.3) !important;
+}
+
+/* Wireframe option badge */
+.tweet-wireframe .bg-gradient-to-r.from-neon-blue\/20.to-neon-blue\/10 {
+    background: linear-gradient(to right, rgba(0, 102, 204, 0.15), rgba(0, 102, 204, 0.08)) !important;
+}
+
+.tweet-wireframe .border-neon-blue\/60 {
+    border-color: rgba(0, 102, 204, 0.4) !important;
+}
+
+/* Wireframe buttons - ensure they still have gradients but visible */
+.tweet-wireframe button.bg-gradient-to-r.from-neon-blue\/20.to-neon-blue\/10 {
+    background: linear-gradient(to right, rgba(0, 102, 204, 0.2), rgba(0, 102, 204, 0.1)) !important;
+}
+
+.tweet-wireframe button.bg-gradient-to-r.from-neon-pink\/20.to-neon-pink\/10 {
+    background: linear-gradient(to right, rgba(204, 0, 102, 0.2), rgba(204, 0, 102, 0.1)) !important;
+}
+
+.tweet-wireframe button.border-neon-blue\/50 {
+    border-color: rgba(0, 102, 204, 0.4) !important;
+}
+
+.tweet-wireframe button.border-neon-pink\/50 {
+    border-color: rgba(204, 0, 102, 0.4) !important;
+}
+
+/* Wireframe buttons text should be white since they're colored buttons */
+.tweet-wireframe button.text-white\/80 {
+    color: #ffffff !important;
+    opacity: 0.8 !important;
+}
+
+/* Wireframe spinner colors */
+.tweet-wireframe .border-neon-blue\/20 {
+    border-color: rgba(0, 102, 204, 0.15) !important;
+}
+
+.tweet-wireframe .text-neon-blue\/60 {
+    color: rgba(0, 102, 204, 0.7) !important;
 }

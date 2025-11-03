@@ -8,7 +8,11 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="css/base.css">
-    <link id="theme-stylesheet" rel="stylesheet" href="themes/dark.css">
+    <script>
+        // Set theme BEFORE page loads to prevent flash
+        const savedTheme = localStorage.getItem('theme') || 'dark';
+        document.write('<link id="theme-stylesheet" rel="stylesheet" href="themes/' + savedTheme + '.css">');
+    </script>
     <style>
         @keyframes orbit-spin {
             0% { transform: rotate(0deg); }
@@ -26,10 +30,15 @@
             0%, 100% { transform: translateY(0); }
             50% { transform: translateY(-10px); }
         }
+        @keyframes shimmer {
+            0% { background-position: -200% 0; }
+            100% { background-position: 200% 0; }
+        }
         .orbit-spin { animation: orbit-spin 20s linear infinite; }
         .star-pulse { animation: star-pulse 3s ease-in-out infinite; }
         .fade-in-up { animation: fade-in-up 0.5s ease-out; }
         .float { animation: float 3s ease-in-out infinite; }
+        .animate-shimmer { animation: shimmer 2s ease-in-out infinite; }
     </style>
     <script>
         tailwind.config = {
@@ -57,7 +66,7 @@
     
     <!-- Navigation Bar -->
     <nav class="fixed top-0 left-0 right-0 z-50 backdrop-blur-lg bg-glass-dark/40 border-b border-white/10">
-        <div class="max-w-7xl mx-auto px-6 py-4 flex justify-end items-center gap-3">
+        <div class="w-full px-6 py-4 flex justify-end items-center gap-3">
             <!-- Theme Toggle Button -->
             <button 
                 id="themeToggleBtn"
@@ -71,6 +80,17 @@
                 <!-- Moon Icon (visible in light mode) -->
                 <svg id="moonIcon" xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 hidden" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z" />
+                </svg>
+            </button>
+            
+            <!-- History Button -->
+            <button 
+                id="historyBtn"
+                class="p-3 bg-glass-dark/60 backdrop-blur-md border border-white/20 rounded-xl text-white/90 hover:text-white hover:border-white/40 transition-all hover:scale-[1.02]"
+                title="Generated History"
+            >
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
                 </svg>
             </button>
             
@@ -88,27 +108,42 @@
         </div>
     </nav>
     
-    <!-- Main Container -->
-    <div class="max-w-4xl mx-auto px-6 py-16 mt-20 relative z-10">
+    <!-- Main Container - Split Screen Layout -->
+    <div id="mainContainer" class="flex items-start fixed inset-0 top-20 max-w-full px-0 z-10" style="gap: 0;">
+        <!-- Left Side -->
+        <div id="leftSide" class="flex-1 min-w-0 overflow-y-auto h-full px-6 py-16" style="flex-basis: 100%; max-width: 100%; transition: flex-basis 0.4s ease, max-width 0.4s ease;">
+        <div class="max-w-[800px] mx-auto">
         <!-- Title -->
         <div class="flex items-center justify-center mb-12">
-            <h1 class="text-5xl md:text-7xl font-bold text-center bg-clip-text text-transparent bg-gradient-to-r from-neon-blue to-neon-pink floating">
-                Tweet Generator
+            <h1 class="text-5xl md:text-7xl lg:text-8xl font-bold text-center bg-clip-text text-transparent bg-gradient-to-r from-neon-blue to-neon-pink floating">
+                Product To Tweets
                 <span class="block text-2xl md:text-3xl font-normal mt-4 text-white/40 tracking-tight">
-                    Powered by AI
-                </span>
-            </h1>
+                    Understands You, Your Product, Tweets
+            </span>
+        </h1>
         </div>
         
-        <!-- Settings Panel -->
-        <div id="settingsPanel" class="hidden mb-8 backdrop-blur-lg bg-glass-dark/30 border border-white/10 rounded-2xl p-8 shadow-2xl fade-in-up z-20 relative font-sans">
-            <div class="mb-8">
-                <h2 class="text-3xl font-bold text-white mb-3 tracking-tight">Settings & API Credentials</h2>
-                <p class="text-white/80 text-sm leading-relaxed">Configure your API tokens and preferences for tweet generation and posting.</p>
+        <!-- Settings Modal -->
+        <div id="settingsModal" class="hidden fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm">
+            <div class="backdrop-blur-lg bg-glass-dark/40 border border-white/20 rounded-2xl p-8 shadow-2xl fade-in-up max-w-4xl w-full mx-4 mt-20 max-h-[calc(90vh-80px)] overflow-y-auto">
+            <div class="flex items-center justify-between mb-8">
+                <div>
+                    <h2 class="text-3xl font-bold text-white mb-3 tracking-tight">Settings & API Credentials</h2>
+                    <p class="text-white/80 text-sm leading-relaxed">Configure your API tokens and preferences for tweet generation and posting.</p>
+                </div>
+                <button 
+                    id="closeSettingsBtn"
+                    class="p-2 bg-chrome-accent/60 hover:bg-chrome-accent border border-white/20 rounded-xl text-white/90 hover:text-white transition-all hover:scale-[1.02] flex-shrink-0"
+                    title="Close"
+                >
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+                    </svg>
+                </button>
             </div>
 
             <!-- Content Generation Settings Section -->
-            <div class="mb-8 pb-8 border-b border-white/20">
+            <div class="mb-8 pb-8 border-b border-white/5">
                 <div class="flex items-center gap-3 mb-5">
                     <div class="w-11 h-11 rounded-xl bg-neon-blue/20 border border-neon-blue/30 flex items-center justify-center">
                         <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-neon-blue" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -141,10 +176,26 @@
                         </p>
                     </div>
                 </div>
+
+                <!-- Number of Tweets -->
+                <div class="mb-6 ml-14">
+                    <label for="numberOfTweets" class="block mb-2.5 text-white font-semibold text-sm tracking-tight">
+                        Number of Tweets to Generate
+                    </label>
+                    <input 
+                        type="number" 
+                        id="numberOfTweets" 
+                        min="1" 
+                        max="10" 
+                        value="3" 
+                        class="w-full px-4 py-3.5 bg-chrome-accent border border-white/30 rounded-xl text-white text-sm placeholder-white/50 focus:outline-none focus:ring-2 focus:ring-neon-blue/60 focus:border-neon-blue/50 transition-all backdrop-blur-sm font-sans"
+                    >
+                    <p class="mt-2.5 text-white/75 text-xs leading-relaxed">Choose how many tweet options you want to generate (1-10). Each option uses the same workflow but provides different variations.</p>
+                </div>
             </div>
 
             <!-- Replicate API Section -->
-            <div class="mb-8 pb-8 border-b border-white/20">
+            <div class="mb-8 pb-8 border-b border-white/5">
                 <div class="flex items-center gap-3 mb-5">
                     <div class="w-11 h-11 rounded-xl bg-neon-pink/20 border border-neon-pink/30 flex items-center justify-center">
                         <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-neon-pink" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -268,7 +319,7 @@
             </div>
 
             <!-- AI Prompts Section -->
-            <div class="mb-8 pb-8 border-b border-white/20">
+            <div class="mb-8 pb-8 border-b border-white/5">
                 <div class="flex items-center gap-3 mb-5">
                     <div class="w-11 h-11 rounded-xl bg-purple-500/20 border border-purple-500/30 flex items-center justify-center">
                         <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-purple-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -327,7 +378,7 @@
             </div>
             
             <!-- Action Buttons -->
-            <div class="flex gap-4 pt-6 border-t border-white/20">
+            <div class="flex gap-4 pt-6 border-t border-white/5">
                 <button 
                     id="saveSettingsBtn"
                     class="flex-1 px-6 py-3.5 bg-neon-blue hover:bg-neon-blue/90 text-white font-semibold rounded-xl transition-all hover:scale-[1.005] shadow-lg shadow-neon-blue/30 tracking-tight"
@@ -340,6 +391,7 @@
                 >
                     Cancel
                 </button>
+            </div>
             </div>
         </div>
         
@@ -408,7 +460,7 @@
         <!-- Error Message -->
         <div id="error" class="hidden mt-8 bg-neon-pink/20 backdrop-blur-sm border border-neon-pink/50 text-neon-pink p-4 rounded-xl fade-in-up">
             <p class="font-semibold">Houston, we have a problem. Try again?</p>
-            <p class="text-sm mt-2 text-white/80"></p>
+            <p class="text-sm mt-2 text-white/80 break-words"></p>
         </div>
         
         <!-- Extracted Tweets Card -->
@@ -417,71 +469,6 @@
             <p class="text-white/60 text-sm mb-4">This writing style analysis was used to generate your tweet:</p>
             <div class="bg-chrome-accent/60 backdrop-blur-sm p-6 rounded-xl border border-white/20 max-h-96 overflow-y-auto">
                 <div id="extractedTweetsList" class="space-y-3 text-white/90 whitespace-pre-wrap text-sm leading-relaxed"></div>
-            </div>
-        </div>
-        
-        <!-- Preview Card -->
-        <div id="preview" class="hidden mt-8 backdrop-blur-lg bg-glass-dark/40 border border-white/20 rounded-2xl p-8 shadow-2xl fade-in-up hover:border-white/30 transition-all">
-            <h2 class="text-2xl font-bold text-white mb-6">Tweet Preview</h2>
-            
-            <div class="mb-6">
-                <img id="previewImg" alt="Product Image" class="w-full rounded-xl border border-white/20">
-            </div>
-            
-            <div class="bg-chrome-accent/60 backdrop-blur-sm p-6 rounded-xl border border-white/20 mb-6">
-                <p id="previewTweet" class="text-white leading-relaxed whitespace-pre-wrap"></p>
-            </div>
-            
-            <div class="flex gap-4">
-                <button 
-                    id="postBtn" 
-                    class="post-btn flex-1 py-4 px-6 bg-glass-dark/60 backdrop-blur-md text-white font-bold text-lg rounded-xl transition-all duration-300 transform hover:scale-[1.005] disabled:opacity-30 disabled:cursor-not-allowed disabled:transform-none relative overflow-hidden group"
-                >
-                    <span class="relative z-10">POST IT</span>
-                    <div class="absolute inset-0 bg-gradient-to-r from-neon-blue/0 via-white/5 to-neon-pink/0 opacity-0 group-hover:opacity-100 transition-opacity duration-500 rounded-xl"></div>
-                </button>
-                <button 
-                    id="scheduleBtn" 
-                    class="post-btn flex-1 py-4 px-6 bg-glass-dark/60 backdrop-blur-md text-white font-bold text-lg rounded-xl transition-all duration-300 transform hover:scale-[1.005] disabled:opacity-30 disabled:cursor-not-allowed disabled:transform-none relative overflow-hidden group"
-                >
-                    <span class="relative z-10">SCHEDULE</span>
-                    <div class="absolute inset-0 bg-gradient-to-r from-neon-blue/0 via-white/5 to-neon-pink/0 opacity-0 group-hover:opacity-100 transition-opacity duration-500 rounded-xl"></div>
-                </button>
-            </div>
-        </div>
-        
-        <!-- Scheduling Modal -->
-        <div id="scheduleModal" class="hidden fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm">
-            <div class="backdrop-blur-lg bg-glass-dark/40 border border-white/20 rounded-2xl p-8 shadow-2xl fade-in-up max-w-md w-full mx-4">
-                <h2 class="text-2xl font-bold text-white mb-6">Schedule Tweet</h2>
-                
-                <div class="mb-6">
-                    <label for="scheduleDateTime" class="block mb-2.5 text-white font-semibold text-sm tracking-tight">
-                        Date & Time
-                    </label>
-                    <input 
-                        type="datetime-local" 
-                        id="scheduleDateTime" 
-                        class="w-full px-4 py-3.5 bg-chrome-accent border border-white/30 rounded-xl text-white text-sm focus:outline-none focus:ring-2 focus:ring-neon-blue/60 focus:border-neon-blue/50 transition-all backdrop-blur-sm font-sans"
-                        required
-                    >
-                    <p class="mt-2.5 text-white/75 text-xs leading-relaxed">Select when you want this tweet to be posted.</p>
-                </div>
-                
-                <div class="flex gap-4">
-                    <button 
-                        id="confirmScheduleBtn"
-                        class="flex-1 px-6 py-3.5 bg-neon-blue hover:bg-neon-blue/90 text-white font-semibold rounded-xl transition-all hover:scale-[1.005] shadow-lg shadow-neon-blue/30 tracking-tight"
-                    >
-                        Schedule
-                    </button>
-                    <button 
-                        id="cancelScheduleBtn"
-                        class="px-6 py-3.5 bg-chrome-accent/80 hover:bg-chrome-accent border border-white/20 text-white/90 hover:text-white font-semibold rounded-xl transition-all hover:scale-[1.005] tracking-tight"
-                    >
-                        Cancel
-                    </button>
-                </div>
             </div>
         </div>
         
@@ -512,6 +499,104 @@
                 <p class="text-white/40 text-sm mt-2">Generate and schedule a tweet to see it here.</p>
             </div>
         </div>
+        </div>
+        </div>
+        <!-- End Left Side -->
+        
+        <!-- Right Side - Twitter Style Preview -->
+        <div id="rightSide" class="hidden flex-1 min-w-0 border-l border-white/10 overflow-y-auto h-full" style="flex-basis: 0%; max-width: 0%; transition: flex-basis 0.4s ease, max-width 0.4s ease;">
+            <div class="sticky top-0 backdrop-blur-lg border-b border-white/10 p-6 z-10">
+                <h2 class="text-2xl font-bold text-white mb-2">Tweet Preview</h2>
+                <p class="text-white/60 text-sm">Choose your favorite option</p>
+            </div>
+            
+            <div class="p-6">
+                <div id="tweetsContainer" class="space-y-6 max-w-xl mx-auto">
+                    <div class="text-center py-12 text-white/60">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-16 w-16 mx-auto mb-4 text-white/20" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" />
+                        </svg>
+                        <p class="text-white/60 text-sm">Generate tweets to see previews here</p>
+                    </div>
+                </div>
+                
+            </div>
+        </div>
+        
+        <!-- Generated History Modal -->
+        <div id="historyModal" class="hidden fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm">
+            <div class="backdrop-blur-lg bg-glass-dark/40 border border-white/20 rounded-2xl p-8 shadow-2xl fade-in-up max-w-4xl w-full mx-4 mt-20 max-h-[calc(90vh-80px)] overflow-y-auto">
+                <div class="flex items-center justify-between mb-6">
+                    <h2 class="text-3xl font-bold text-white tracking-tight">Generated History</h2>
+                    <button 
+                        id="closeHistoryBtn"
+                        class="p-2 bg-chrome-accent/60 hover:bg-chrome-accent border border-white/20 rounded-xl text-white/90 hover:text-white transition-all hover:scale-[1.02]"
+                        title="Close"
+                    >
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+                        </svg>
+                    </button>
+                </div>
+                
+                <div class="flex items-center justify-between mb-6">
+                    <p class="text-white/80 text-sm leading-relaxed">View and reuse your previously generated tweets</p>
+                    <button 
+                        id="clearHistoryBtn"
+                        class="px-4 py-2 text-sm text-white/60 hover:text-white/90 border border-white/20 hover:border-white/40 rounded-lg transition-all"
+                        title="Clear History"
+                    >
+                        Clear All
+                    </button>
+                </div>
+                
+                <div id="tweetsHistoryList" class="space-y-3">
+                    <!-- History items will be displayed here -->
+                </div>
+                <div id="tweetsHistoryEmpty" class="text-center py-12 text-white/40">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-16 w-16 mx-auto mb-4 text-white/20" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                    </svg>
+                    <p class="text-sm">No generated tweets yet</p>
+                    <p class="text-xs text-white/30 mt-2">Generate tweets to see them here</p>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Scheduling Modal -->
+        <div id="scheduleModal" class="hidden fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm">
+            <div class="backdrop-blur-lg bg-glass-dark/40 border border-white/20 rounded-2xl p-8 shadow-2xl fade-in-up max-w-md w-full mx-4">
+                <h2 class="text-2xl font-bold text-white mb-6">Schedule Tweet</h2>
+            
+            <div class="mb-6">
+                    <label for="scheduleDateTime" class="block mb-2.5 text-white font-semibold text-sm tracking-tight">
+                        Date & Time
+                    </label>
+                    <input 
+                        type="datetime-local" 
+                        id="scheduleDateTime" 
+                        class="w-full px-4 py-3.5 bg-chrome-accent border border-white/30 rounded-xl text-white text-sm focus:outline-none focus:ring-2 focus:ring-neon-blue/60 focus:border-neon-blue/50 transition-all backdrop-blur-sm font-sans"
+                        required
+                    >
+                    <p class="mt-2.5 text-white/75 text-xs leading-relaxed">Select when you want this tweet to be posted.</p>
+            </div>
+            
+                <div class="flex gap-4">
+                    <button 
+                        id="confirmScheduleBtn"
+                        class="flex-1 px-6 py-3.5 bg-neon-blue hover:bg-neon-blue/90 text-white font-semibold rounded-xl transition-all hover:scale-[1.005] shadow-lg shadow-neon-blue/30 tracking-tight"
+                    >
+                        Schedule
+                    </button>
+                    <button 
+                        id="cancelScheduleBtn"
+                        class="px-6 py-3.5 bg-chrome-accent/80 hover:bg-chrome-accent border border-white/20 text-white/90 hover:text-white font-semibold rounded-xl transition-all hover:scale-[1.005] tracking-tight"
+                    >
+                        Cancel
+                    </button>
+                </div>
+            </div>
+            </div>
     </div>
 
     <script>
@@ -539,7 +624,7 @@
                 $('body').addClass('theme-transitioning');
                 setTimeout(() => {
                     $('body').removeClass('theme-transitioning');
-                }, 300);
+                }, 200);
             }
             
             // Initialize theme
@@ -554,6 +639,7 @@
             // Load default settings from JSON file
             let defaultSettings = {
                 xProfileLink: 'https://x.com/dope_as_yola',
+                numberOfTweets: 3,
                 replicateToken: 'YOUR_REPLICATE_API_TOKEN_HERE',
                 twitterApiKey: 'YOUR_TWITTER_API_KEY_HERE',
                 twitterApiSecret: 'YOUR_TWITTER_API_SECRET_HERE',
@@ -574,7 +660,7 @@
                         twitterAccessSecret: data.twitter?.accessSecret || defaultSettings.twitterAccessSecret
                     };
                     // Update input fields if settings panel is already open
-                    if (!$('#settingsPanel').hasClass('hidden')) {
+                    if (!$('#settingsModal').hasClass('hidden')) {
                         initializeSettingsFields();
                     }
                 })
@@ -583,6 +669,7 @@
             // Initialize settings fields with values
             function initializeSettingsFields() {
                 let xProfileLink = localStorage.getItem('xProfileLink') || defaultSettings.xProfileLink;
+                let numberOfTweets = parseInt(localStorage.getItem('numberOfTweets')) || defaultSettings.numberOfTweets || 3;
                 let replicateToken = localStorage.getItem('replicateToken') || defaultSettings.replicateToken;
                 let twitterApiKey = localStorage.getItem('twitterApiKey') || defaultSettings.twitterApiKey;
                 let twitterApiSecret = localStorage.getItem('twitterApiSecret') || defaultSettings.twitterApiSecret;
@@ -590,6 +677,7 @@
                 let twitterAccessSecret = localStorage.getItem('twitterAccessSecret') || defaultSettings.twitterAccessSecret;
 
                 $('#xProfileLink').val(xProfileLink);
+                $('#numberOfTweets').val(numberOfTweets);
                 $('#replicateToken').val(replicateToken);
                 $('#twitterApiKey').val(twitterApiKey);
                 $('#twitterApiSecret').val(twitterApiSecret);
@@ -599,6 +687,7 @@
 
             // Load saved values from localStorage, fallback to defaults
             let xProfileLink = localStorage.getItem('xProfileLink') || defaultSettings.xProfileLink;
+            let numberOfTweets = parseInt(localStorage.getItem('numberOfTweets')) || defaultSettings.numberOfTweets || 3;
             let replicateToken = localStorage.getItem('replicateToken') || defaultSettings.replicateToken;
             let twitterApiKey = localStorage.getItem('twitterApiKey') || defaultSettings.twitterApiKey;
             let twitterApiSecret = localStorage.getItem('twitterApiSecret') || defaultSettings.twitterApiSecret;
@@ -622,13 +711,41 @@
                     .catch(error => console.warn('Could not load prompts:', error));
             }
 
-            // Settings panel toggle
+            // Settings modal toggle
             $('#settingsBtn').on('click', function() {
-                $('#settingsPanel').toggleClass('hidden');
-                if (!$('#settingsPanel').hasClass('hidden')) {
-                    // Refresh values when opening panel
-                    initializeSettingsFields();
-                    loadPrompts();
+                $('#settingsModal').removeClass('hidden');
+                // Refresh values when opening modal
+                initializeSettingsFields();
+                loadPrompts();
+            });
+            
+            // Close settings modal
+            $('#closeSettingsBtn').on('click', function() {
+                $('#settingsModal').addClass('hidden');
+            });
+            
+            // Close settings modal on backdrop click
+            $('#settingsModal').on('click', function(e) {
+                if ($(e.target).attr('id') === 'settingsModal') {
+                    $('#settingsModal').addClass('hidden');
+                }
+            });
+            
+            // History modal toggle
+            $('#historyBtn').on('click', function() {
+                $('#historyModal').removeClass('hidden');
+                loadTweetsHistory(); // Refresh history when opening
+            });
+            
+            // Close history modal
+            $('#closeHistoryBtn').on('click', function() {
+                $('#historyModal').addClass('hidden');
+            });
+            
+            // Close history modal on backdrop click
+            $('#historyModal').on('click', function(e) {
+                if ($(e.target).attr('id') === 'historyModal') {
+                    $('#historyModal').addClass('hidden');
                 }
             });
 
@@ -637,6 +754,11 @@
                 const newLink = $('#xProfileLink').val().trim();
                 if (newLink && isValidUrl(newLink)) {
                     xProfileLink = newLink;
+                    numberOfTweets = parseInt($('#numberOfTweets').val()) || 3;
+                    // Validate number of tweets
+                    if (numberOfTweets < 1) numberOfTweets = 1;
+                    if (numberOfTweets > 10) numberOfTweets = 10;
+                    
                     replicateToken = $('#replicateToken').val().trim() || defaultSettings.replicateToken;
                     twitterApiKey = $('#twitterApiKey').val().trim() || defaultSettings.twitterApiKey;
                     twitterApiSecret = $('#twitterApiSecret').val().trim() || defaultSettings.twitterApiSecret;
@@ -645,6 +767,7 @@
 
                     // Save to localStorage
                     localStorage.setItem('xProfileLink', xProfileLink);
+                    localStorage.setItem('numberOfTweets', numberOfTweets);
                     localStorage.setItem('replicateToken', replicateToken);
                     localStorage.setItem('twitterApiKey', twitterApiKey);
                     localStorage.setItem('twitterApiSecret', twitterApiSecret);
@@ -664,7 +787,7 @@
                     .then(response => response.json())
                     .then(data => {
                         if (data.success) {
-                            $('#settingsPanel').addClass('hidden');
+                            $('#settingsModal').addClass('hidden');
                             showNotification('Settings and prompts saved successfully!', 'success');
                         } else {
                             showNotification('Settings saved, but failed to save prompts. Please try again.', 'error');
@@ -672,7 +795,7 @@
                     })
                     .catch(error => {
                         console.error('Error saving prompts:', error);
-                        $('#settingsPanel').addClass('hidden');
+                        $('#settingsModal').addClass('hidden');
                         showNotification('Settings saved, but failed to save prompts. Please try again.', 'error');
                     });
                 } else {
@@ -684,6 +807,7 @@
             $('#cancelSettingsBtn').on('click', function() {
                 // Reset to saved values
                 $('#xProfileLink').val(xProfileLink);
+                $('#numberOfTweets').val(numberOfTweets);
                 $('#replicateToken').val(replicateToken);
                 $('#twitterApiKey').val(twitterApiKey);
                 $('#twitterApiSecret').val(twitterApiSecret);
@@ -691,7 +815,7 @@
                 $('#twitterAccessSecret').val(twitterAccessSecret);
                 // Reload prompts to reset any changes
                 loadPrompts();
-                $('#settingsPanel').addClass('hidden');
+                $('#settingsModal').addClass('hidden');
             });
 
             // URL validation helper
@@ -741,7 +865,6 @@
                 
                 $('#loading').removeClass('hidden');
                 $('#error').addClass('hidden');
-                $('#preview').addClass('hidden');
                 $('#extractedTweets').addClass('hidden');
                 $('.loading-step').addClass('hidden').removeClass('bg-neon-pink/10 border-neon-pink');
                 $('#step1').removeClass('hidden');
@@ -752,75 +875,566 @@
                 setTimeout(() => showStep(3), 2500);
                 setTimeout(() => showStep(4), 3500);
                 
+                // Generate tweets - call process.php N times (same workflow, just run N times)
+                // Get number of tweets from settings
+                const totalRequests = Math.max(1, Math.min(10, numberOfTweets || 3));
+                
+                let styleAnalysis = null;
+                let imageUrl = null;
+                let generatedTweets = new Array(totalRequests).fill(null); // Initialize as array with N slots
+                let completedRequests = 0;
+                let successfulRequests = 0;
+                
+                // Slide in the right panel and adjust left panel
+                $('#rightSide').removeClass('hidden');
+                setTimeout(() => {
+                    $('#leftSide').css({'flex-basis': '70%', 'max-width': '70%'});
+                    $('#rightSide').css({'flex-basis': '30%', 'max-width': '30%'});
+                }, 10);
+                
+                // Create wireframe/skeleton loaders for each tweet
+                let wireframes = '';
+                const twitterHandle = getTwitterHandle();
+                for (let i = 0; i < totalRequests; i++) {
+                    wireframes += `
+                        <div id="tweet-wireframe-${i}" class="tweet-wireframe bg-gradient-to-br from-black-void via-black-void/95 to-black-void/90 border border-white/10 rounded-2xl p-5 shadow-lg hover:border-white/20 transition-all duration-300" data-index="${i}">
+                            <!-- Twitter-style header -->
+                            <div class="flex items-start gap-3 mb-4">
+                                <div class="flex-shrink-0 w-12 h-12 rounded-full bg-gradient-to-br from-neon-blue/30 to-neon-blue/10 border-2 border-neon-blue/40 flex items-center justify-center overflow-hidden shadow-lg shadow-neon-blue/20">
+                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-neon-blue/80" fill="currentColor" viewBox="0 0 24 24">
+                                        <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/>
+                                    </svg>
+                                </div>
+                                <div class="flex-1 min-w-0 flex items-start justify-between gap-3">
+                                    <div class="flex-1 min-w-0">
+                                        <div class="flex items-center gap-2 mb-1">
+                                            <span class="font-bold text-white/90 text-sm">Your Account</span>
+                                            <span class="text-white/30 text-sm">·</span>
+                                            <span class="text-white/40 text-xs">now</span>
+                                        </div>
+                                        <div class="text-white/60 text-sm font-medium" data-twitter-handle="${escapeHtml(twitterHandle)}">
+                                            ${escapeHtml(twitterHandle)}
+                                        </div>
+                                    </div>
+                                    <span class="px-3 py-1 rounded-lg text-xs font-bold border-2 bg-gradient-to-r from-neon-blue/20 to-neon-blue/10 border-neon-blue/60 text-neon-blue shadow-sm">
+                                        Option ${i + 1}
+                                    </span>
+                                </div>
+                            </div>
+                            
+                            <!-- Tweet content skeleton with shimmer effect -->
+                            <div class="mb-4">
+                                <div class="space-y-3">
+                                    <div class="flex items-center gap-2">
+                                        <div class="h-5 w-full bg-gradient-to-r from-white/10 via-white/20 to-white/10 rounded-md animate-pulse bg-[length:200%_100%] animate-shimmer"></div>
+                                    </div>
+                                    <div class="flex items-center gap-2">
+                                        <div class="h-5 w-[92%] bg-gradient-to-r from-white/10 via-white/20 to-white/10 rounded-md animate-pulse bg-[length:200%_100%] animate-shimmer" style="animation-delay: 0.1s"></div>
+                                    </div>
+                                    <div class="flex items-center gap-2">
+                                        <div class="h-5 w-[85%] bg-gradient-to-r from-white/10 via-white/20 to-white/10 rounded-md animate-pulse bg-[length:200%_100%] animate-shimmer" style="animation-delay: 0.2s"></div>
+                                    </div>
+                                    <div class="flex items-center gap-2">
+                                        <div class="h-5 w-[70%] bg-gradient-to-r from-white/10 via-white/20 to-white/10 rounded-md animate-pulse bg-[length:200%_100%] animate-shimmer" style="animation-delay: 0.3s"></div>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <!-- Image loader with better animation -->
+                            <div class="mb-4 relative overflow-hidden rounded-2xl bg-gradient-to-br from-white/5 via-white/3 to-white/5 border-2 border-white/10 backdrop-blur-sm">
+                                <div class="h-64 flex items-center justify-center bg-gradient-to-br from-neon-blue/5 via-transparent to-neon-pink/5">
+                                    <div class="relative flex flex-col items-center gap-4">
+                                        <div class="relative w-20 h-20">
+                                            <div class="absolute inset-0 border-4 border-neon-blue/20 rounded-full"></div>
+                                            <div class="absolute inset-0 border-4 border-transparent border-t-neon-blue border-r-neon-blue rounded-full animate-spin"></div>
+                                            <div class="absolute inset-0 flex items-center justify-center">
+                                                <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8 text-neon-blue/60 animate-pulse" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                                                </svg>
+                                            </div>
+                                        </div>
+                                        <div class="text-white/40 text-xs font-medium">Loading product image...</div>
+                                    </div>
+                                </div>
+                                <div class="absolute bottom-0 left-0 right-0 h-16 bg-gradient-to-t from-black/60 via-black/30 to-transparent pointer-events-none"></div>
+                            </div>
+                            
+                            <!-- Action buttons with better styling -->
+                            <div class="flex gap-3 pt-4 border-t border-white/10">
+                                <button class="flex-1 h-11 bg-gradient-to-r from-neon-blue/20 to-neon-blue/10 hover:from-neon-blue/30 hover:to-neon-blue/20 border-2 border-neon-blue/50 rounded-xl text-white/80 text-sm font-bold transition-all duration-300 shadow-lg shadow-neon-blue/10 opacity-75 cursor-not-allowed" disabled>
+                                    <span class="flex items-center justify-center gap-2">
+                                        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8" />
+                                        </svg>
+                                        <span>POST IT</span>
+                                    </span>
+                                </button>
+                                <button class="flex-1 h-11 bg-gradient-to-r from-neon-pink/20 to-neon-pink/10 hover:from-neon-pink/30 hover:to-neon-pink/20 border-2 border-neon-pink/50 rounded-xl text-white/80 text-sm font-bold transition-all duration-300 shadow-lg shadow-neon-pink/10 opacity-75 cursor-not-allowed" disabled>
+                                    <span class="flex items-center justify-center gap-2">
+                                        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                                        </svg>
+                                        <span>SCHEDULE</span>
+                                    </span>
+                                </button>
+                            </div>
+                        </div>
+                    `;
+                }
+                
+                // Initialize tweets container with wireframes
+                $('#tweetsContainer').html(wireframes);
+                
+                function generateTweet(index) {
                 $.ajax({
                     url: 'process.php',
                     type: 'POST',
                     data: {
-                        shopify_url: shopifyUrl,
-                        x_profile_link: xProfileLink,
-                        replicate_token: replicateToken
+                            shopify_url: shopifyUrl,
+                            x_profile_link: xProfileLink,
+                            replicate_token: replicateToken
                     },
                     dataType: 'json',
                     success: function(response) {
+                            completedRequests++;
+                            
+                            if (response.error) {
+                                console.error(`Tweet ${index + 1} error:`, response.error);
+                                // Show error in tweet card
+                                addTweetError(index, response.error);
+                                
+                                if (completedRequests === totalRequests) {
                         $('#loading').addClass('hidden');
                         $('#generateBtn').prop('disabled', false);
-                        
-                        if (response.error) {
-                            $('#error').removeClass('hidden').find('p').last().text(response.error);
-                        } else {
-                            generatedData = response;
-                            
-                            // Show style analysis
-                            console.log('Style analysis response:', response.extracted_tweets);
-                            if (response.extracted_tweets && response.extracted_tweets.trim() !== '') {
-                                // Display the style analysis with formatting
-                                const styleAnalysis = response.extracted_tweets.trim();
-                                
-                                // Format sections with better styling
-                                let formattedHTML = '<div class="space-y-4">';
-                                const sections = styleAnalysis.split(/\n(?=SECTION \d+)/);
-                                
-                                sections.forEach(section => {
-                                    const lines = section.split('\n').filter(l => l.trim() !== '');
-                                    if (lines.length > 0) {
-                                        formattedHTML += '<div class="border-l-2 border-neon-blue/30 pl-4 py-2">';
-                                        lines.forEach(line => {
-                                            if (line.match(/^SECTION \d+/)) {
-                                                formattedHTML += `<h3 class="font-bold text-neon-blue mb-2">${line}</h3>`;
-                                            } else if (line.match(/^—|^SECTION/)) {
-                                                formattedHTML += `<h4 class="font-semibold text-white/90 mt-2 mb-1">${line}</h4>`;
-                                            } else {
-                                                formattedHTML += `<p class="text-white/80 text-sm leading-relaxed">${line}</p>`;
-                                            }
-                                        });
-                                        formattedHTML += '</div>';
+                                    $('#rightSide .sticky h2').text(`Tweet Preview (${successfulRequests} Options)`);
+                                    if (successfulRequests === 0) {
+                                        $('#error').removeClass('hidden').find('p').last().text(`Error: ${response.error} (All ${totalRequests} attempts failed)`);
+                                        $('#tweetsContainer').html(`<div class="text-center py-12 text-red-400">All ${totalRequests} attempts failed. Please check your API credentials and try again.</div>`);
                                     }
-                                });
-                                
-                                if (sections.length === 0) {
-                                    // If no sections found, just display as plain text
-                                    formattedHTML = `<div class="text-white/80 text-sm leading-relaxed whitespace-pre-wrap">${styleAnalysis}</div>`;
-                                } else {
-                                    formattedHTML += '</div>';
                                 }
-                                
-                                $('#extractedTweetsList').html(formattedHTML);
-                                $('#extractedTweets').removeClass('hidden');
-                            } else {
-                                $('#extractedTweetsList').html('<p class="text-white/60 italic">No writing style could be analyzed from the profile. The AI will generate based on the profile style reference only.</p>');
-                                $('#extractedTweets').removeClass('hidden');
+                                return;
                             }
                             
-                            $('#previewImg').attr('src', response.image_url);
-                            $('#previewTweet').text(response.tweet);
-                            $('#preview').removeClass('hidden');
+                            // Store style analysis and image from first successful response
+                            if (index === 0 || !styleAnalysis) {
+                                styleAnalysis = response.extracted_tweets;
+                                imageUrl = response.image_url;
+                                
+                                // Show style analysis
+                                if (styleAnalysis && styleAnalysis.trim() !== '') {
+                                    const formattedHTML = formatStyleAnalysis(styleAnalysis);
+                                    $('#extractedTweetsList').html(formattedHTML);
+                                    $('#extractedTweets').removeClass('hidden');
+                        } else {
+                                    $('#extractedTweetsList').html('<p class="text-white/60 italic">No writing style could be analyzed from the profile. The AI will generate based on the profile style reference only.</p>');
+                                    $('#extractedTweets').removeClass('hidden');
+                                }
+                            }
+                            
+                            // Store tweet and display immediately when ready
+                            if (response.tweet && response.tweet.trim() !== '') {
+                                // Clean up the tweet - remove any weird responses
+                                let cleanTweet = response.tweet.trim();
+                                
+                                // Filter out common AI assistant responses that shouldn't be in the tweet
+                                const lowerTweet = cleanTweet.toLowerCase();
+                                if ((lowerTweet.includes('sure') || lowerTweet.includes('please paste') || lowerTweet.includes('i can help') || lowerTweet.includes('i\'d be happy')) && 
+                                    (lowerTweet.includes('paste') || lowerTweet.includes('improve') || lowerTweet.includes('tweet you'))) {
+                                    console.warn(`Tweet ${index + 1} appears to be an AI assistant response, retrying...`);
+                                    addTweetError(index, 'Invalid response - regenerating...');
+                                    
+                                    // Retry this one without incrementing completedRequests
+                                    completedRequests--; // Don't count this as completed
+                                    setTimeout(() => {
+                                        generateTweet(index);
+                                    }, 1500);
+                                    return;
+                                }
+                                
+                                // Validate tweet is actually a tweet (has reasonable length and content)
+                                if (cleanTweet.length < 20) {
+                                    console.warn(`Tweet ${index + 1} is too short, retrying...`);
+                                    addTweetError(index, 'Tweet too short - regenerating...');
+                                    completedRequests--;
+                                    setTimeout(() => {
+                                        generateTweet(index);
+                                    }, 1500);
+                                    return;
+                                }
+                                
+                                generatedTweets[index] = cleanTweet; // Store at index to maintain order
+                                successfulRequests++;
+                                addTweetCard(index, cleanTweet, imageUrl || response.image_url);
+                                
+                                // Save to history
+                                saveTweetToHistory(cleanTweet, imageUrl || response.image_url);
+                            }
+                            
+                            // When all 3 are done
+                            if (completedRequests === totalRequests) {
+                                $('#loading').addClass('hidden');
+                                $('#generateBtn').prop('disabled', false);
+                                
+                                // Update title with actual count
+                                const validTweets = generatedTweets.filter(t => t).length;
+                                if (validTweets > 0) {
+                                    $('#rightSide .sticky h2').text(`Tweet Preview (${validTweets} Options)`);
+                                }
+                                
+                                if (validTweets === 0) {
+                                    $('#error').removeClass('hidden').find('p').last().text('Failed to generate any tweets. Please check the console for errors.');
+                                    $('#tweetsContainer').html('<div class="text-center py-12 text-white/60">Failed to generate tweets. Please try again.</div>');
+                                }
                         }
                     },
                     error: function(xhr) {
+                            completedRequests++;
+                            
+                            let errorMsg = 'Failed to generate post. Please try again.';
+                            let fullError = '';
+                            
+                            try {
+                                if (xhr.responseText) {
+                                    const response = JSON.parse(xhr.responseText);
+                                    if (response.error) {
+                                        errorMsg = response.error;
+                                        fullError = response.error;
+                                    }
+                                }
+                            } catch(e) {
+                                if (xhr.responseText) {
+                                    errorMsg = xhr.responseText.substring(0, 200);
+                                    fullError = xhr.responseText;
+                                }
+                            }
+                            
+                            console.error(`Tweet ${index + 1} generation failed (HTTP ${xhr.status}):`, fullError || errorMsg);
+                            console.error('Full Response:', xhr.responseText);
+                            console.error('Status:', xhr.status);
+                            console.error('Status Text:', xhr.statusText);
+                            
+                            // Store error for final display
+                            if (!window.errorMessages) {
+                                window.errorMessages = [];
+                            }
+                            window.errorMessages.push(`Tweet ${index + 1}: ${errorMsg}`);
+                            
+                            // If all requests failed or we don't have any tweets yet
+                            if (completedRequests === totalRequests && generatedTweets.length === 0) {
                         $('#loading').addClass('hidden');
                         $('#generateBtn').prop('disabled', false);
                         
-                        let errorMsg = 'Failed to generate post. Please try again.';
+                                // Show detailed error
+                                let detailedError = errorMsg;
+                                if (window.errorMessages && window.errorMessages.length > 0) {
+                                    detailedError = window.errorMessages.join(' | ');
+                                }
+                                
+                                $('#error').removeClass('hidden');
+                                $('#error').find('p').first().text('Failed to generate tweets');
+                                $('#error').find('p').last().text(`Error details: ${detailedError.substring(0, 300)}${detailedError.length > 300 ? '...' : ''}`);
+                                
+                                // Clear error messages
+                                window.errorMessages = [];
+                            } else if (completedRequests === totalRequests && generatedTweets.filter(t => t).length > 0) {
+                                // Some succeeded
+                                $('#loading').addClass('hidden');
+                                $('#generateBtn').prop('disabled', false);
+                                $('#rightSide .sticky h2').text(`Tweet Preview (${generatedTweets.filter(t => t).length} Options)`);
+                                if (generatedTweets.filter(t => t).length < totalRequests) {
+                                    $('#error').removeClass('hidden');
+                                    $('#error').find('p').first().text('Partial Success');
+                                    $('#error').find('p').last().text(`Only ${generatedTweets.filter(t => t).length} out of ${totalRequests} tweets generated successfully.`);
+                                    setTimeout(() => {
+                                        $('#error').addClass('hidden');
+                                    }, 5000);
+                                }
+                                window.errorMessages = [];
+                            } else if (completedRequests === 1 && generatedTweets.length === 0) {
+                                // First request failed - show error but wait for others
+                                console.warn('First request failed, waiting for other attempts...');
+                            }
+                        }
+                    });
+                }
+                
+                // Generate 3 tweets in parallel
+                for (let i = 0; i < totalRequests; i++) {
+                    generateTweet(i);
+                }
+            });
+            
+            // Format style analysis helper
+            function formatStyleAnalysis(styleAnalysis) {
+                let formattedHTML = '<div class="space-y-4">';
+                const sections = styleAnalysis.split(/\n(?=SECTION \d+)/);
+                
+                sections.forEach(section => {
+                    const lines = section.split('\n').filter(l => l.trim() !== '');
+                    if (lines.length > 0) {
+                        formattedHTML += '<div class="border-l-2 border-neon-blue/30 pl-4 py-2">';
+                        lines.forEach(line => {
+                            if (line.match(/^SECTION \d+/)) {
+                                formattedHTML += `<h3 class="font-bold text-neon-blue mb-2">${escapeHtml(line)}</h3>`;
+                            } else if (line.match(/^—|^SECTION/)) {
+                                formattedHTML += `<h4 class="font-semibold text-white/90 mt-2 mb-1">${escapeHtml(line)}</h4>`;
+                            } else {
+                                formattedHTML += `<p class="text-white/80 text-sm leading-relaxed">${escapeHtml(line)}</p>`;
+                            }
+                        });
+                        formattedHTML += '</div>';
+                    }
+                });
+                
+                if (sections.length === 0) {
+                    return `<div class="text-white/80 text-sm leading-relaxed whitespace-pre-wrap">${escapeHtml(styleAnalysis)}</div>`;
+                } else {
+                    return formattedHTML + '</div>';
+                }
+            }
+            
+            // Extract username from xProfileLink - do this once outside the function to ensure consistency
+            function getTwitterHandle() {
+                const currentProfileLink = localStorage.getItem('xProfileLink') || defaultSettings.xProfileLink;
+                let twitterHandle = '@yourhandle';
+                if (currentProfileLink) {
+                    try {
+                        const url = new URL(currentProfileLink);
+                        const pathParts = url.pathname.split('/').filter(part => part.length > 0);
+                        if (pathParts.length > 0) {
+                            twitterHandle = '@' + pathParts[pathParts.length - 1];
+                        }
+                    } catch (e) {
+                        // If URL parsing fails, try to extract from string
+                        const match = currentProfileLink.match(/(?:twitter\.com|x\.com)\/([^\/\?]+)/);
+                        if (match && match[1]) {
+                            twitterHandle = '@' + match[1];
+                        }
+                    }
+                }
+                return twitterHandle;
+            }
+            
+            // Add a single tweet card as soon as it's ready
+            function addTweetCard(index, tweet, imageUrl) {
+                const container = $('#tweetsContainer');
+                
+                // Remove wireframe for this specific tweet
+                $(`#tweet-wireframe-${index}`).remove();
+                
+                // Remove placeholder if exists
+                $(`#tweet-placeholder-${index}`).remove();
+                
+                // Extract username from xProfileLink - call function each time to ensure fresh value
+                const twitterHandle = getTwitterHandle();
+                
+                const tweetCard = $(`
+                    <div class="tweet-option bg-black-void border border-white/10 rounded-xl p-4 hover:border-white/20 transition-all cursor-pointer fade-in-up" data-index="${index}" data-tweet-id="${index}">
+                        <!-- Twitter-style header -->
+                        <div class="flex items-start gap-3 mb-3">
+                            <div class="flex-shrink-0 w-12 h-12 rounded-full bg-neon-blue/20 border border-neon-blue/30 flex items-center justify-center overflow-hidden">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-neon-blue" fill="currentColor" viewBox="0 0 24 24">
+                                    <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/>
+                                </svg>
+                            </div>
+                            <div class="flex-1 min-w-0 flex items-start justify-between gap-3">
+                                <div class="flex-1 min-w-0">
+                                    <div class="flex items-center gap-2 mb-0.5">
+                                        <span class="font-bold text-white text-sm">Your Account</span>
+                                        <span class="text-white/40 text-sm">·</span>
+                                        <span class="text-white/40 text-sm">now</span>
+                                    </div>
+                                    <div class="text-white/60 text-sm" data-twitter-handle="${escapeHtml(twitterHandle)}">
+                                        ${escapeHtml(twitterHandle)}
+                                    </div>
+                                </div>
+                                <span class="px-2 py-0.5 rounded text-xs font-semibold border bg-neon-blue/20 border-neon-blue/50 text-neon-blue flex-shrink-0">
+                                    Option ${index + 1}
+                                </span>
+                            </div>
+                        </div>
+                        
+                        <!-- Tweet content -->
+                        <div class="mb-3">
+                            <p class="text-white text-[15px] leading-[1.375rem] whitespace-pre-wrap">${escapeHtml(tweet)}</p>
+                        </div>
+                        
+                        <!-- Image preview -->
+                        <div class="mb-4 rounded-2xl overflow-hidden border border-white/10">
+                            <img src="${escapeHtml(imageUrl)}" alt="Product Image" class="w-full h-auto" style="object-fit: contain;">
+                        </div>
+                        
+                        <!-- Action buttons -->
+                        <div class="flex gap-2 mt-4 pt-4 border-t border-white/10">
+                            <button 
+                                class="post-selected-btn flex-1 py-2.5 px-4 bg-neon-blue hover:bg-neon-blue/90 text-white font-semibold rounded-xl transition-all hover:scale-[1.02] disabled:opacity-30 disabled:cursor-not-allowed text-sm flex items-center justify-center gap-2"
+                                data-tweet="${escapeHtml(tweet)}"
+                                data-image="${escapeHtml(imageUrl)}"
+                                style="color: #ffffff !important;"
+                            >
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8" />
+                                </svg>
+                                <span>POST IT</span>
+                            </button>
+                            <button 
+                                class="schedule-selected-btn flex-1 py-2.5 px-4 bg-neon-pink hover:bg-neon-pink/90 text-white font-semibold rounded-xl transition-all hover:scale-[1.02] disabled:opacity-30 disabled:cursor-not-allowed text-sm flex items-center justify-center gap-2"
+                                data-tweet="${escapeHtml(tweet)}"
+                                data-image="${escapeHtml(imageUrl)}"
+                                style="color: #ffffff !important;"
+                            >
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                                </svg>
+                                <span>SCHEDULE</span>
+                            </button>
+                        </div>
+                    </div>
+                `);
+                
+                // Insert at correct position (maintain order, considering wireframes)
+                const existingItems = container.find('.tweet-option, .tweet-wireframe');
+                if (existingItems.length === 0) {
+                    container.append(tweetCard);
+                } else {
+                    let inserted = false;
+                    existingItems.each(function() {
+                        const $this = $(this);
+                        const dataIndex = $this.data('index') || $this.attr('data-index');
+                        const idAttr = $this.attr('id') || '';
+                        const idIndex = idAttr.replace('tweet-wireframe-', '').replace('tweet-', '');
+                        const existingIndex = parseInt(dataIndex || idIndex || '999');
+                        if (index < existingIndex) {
+                            $this.before(tweetCard);
+                            inserted = true;
+                            return false;
+                        }
+                    });
+                    if (!inserted) {
+                        container.append(tweetCard);
+                    }
+                }
+                
+                // Add selection effect
+                tweetCard.on('click', function(e) {
+                    if ($(e.target).closest('button').length === 0) {
+                        $('.tweet-option').removeClass('ring-2 ring-neon-blue');
+                        $(this).addClass('ring-2 ring-neon-blue');
+                    }
+                });
+                
+                // Bind post button
+                tweetCard.find('.post-selected-btn').on('click', function(e) {
+                    e.stopPropagation();
+                    const tweet = $(this).data('tweet');
+                    const imageUrl = $(this).data('image');
+                    postSelectedTweet(tweet, imageUrl);
+                });
+                
+                // Bind schedule button
+                tweetCard.find('.schedule-selected-btn').on('click', function(e) {
+                    e.stopPropagation();
+                    const tweet = $(this).data('tweet');
+                    const imageUrl = $(this).data('image');
+                    openScheduleModal(tweet, imageUrl);
+                });
+            }
+            
+            // Add error card for failed tweets
+            function addTweetError(index, errorMsg) {
+                const container = $('#tweetsContainer');
+                
+                // Remove loading message if first error
+                if (index === 0) {
+                    container.find('.text-center').remove();
+                }
+                
+                const errorCard = $(`
+                    <div class="bg-black-void border border-red-500/50 rounded-xl p-4 fade-in-up" data-index="${index}">
+                        <div class="flex items-center gap-3 mb-3">
+                            <div class="flex-shrink-0 w-12 h-12 rounded-full bg-red-500/20 border border-red-500/30 flex items-center justify-center">
+                                <svg class="h-6 w-6 text-red-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                                </svg>
+                            </div>
+                            <div>
+                                <div class="flex items-center gap-2">
+                                    <span class="font-bold text-white text-sm">Error</span>
+                                    <span class="px-2 py-0.5 rounded text-xs font-semibold border bg-red-500/20 border-red-500/50 text-red-400">
+                                        Option ${index + 1}
+                                    </span>
+                                </div>
+                            </div>
+                        </div>
+                        <p class="text-red-400 text-sm ml-14">${escapeHtml(errorMsg)}</p>
+                    </div>
+                `);
+                
+                const existingCards = container.find('.tweet-option, [data-index]');
+                if (existingCards.length === 0) {
+                    container.append(errorCard);
+                } else {
+                    let inserted = false;
+                    existingCards.each(function() {
+                        const existingIndex = parseInt($(this).data('index'));
+                        if (index < existingIndex) {
+                            $(this).before(errorCard);
+                            inserted = true;
+                            return false;
+                        }
+                    });
+                    if (!inserted) {
+                        container.append(errorCard);
+                    }
+                }
+            }
+            
+            // Display all tweets at once (for backwards compatibility)
+            function displayGeneratedTweets(tweets, imageUrl) {
+                // This function is kept for compatibility but tweets are now added one by one
+                const container = $('#tweetsContainer');
+                tweets.forEach((tweet, index) => {
+                    if (!container.find(`[data-tweet-id="${index}"]`).length) {
+                        addTweetCard(index, tweet, imageUrl);
+                    }
+                });
+            }
+            
+            // Post selected tweet function
+            function postSelectedTweet(tweet, imageUrl) {
+                $('.post-selected-btn, .history-post-btn').prop('disabled', true);
+                
+                $.ajax({
+                    url: 'post.php',
+                    type: 'POST',
+                    data: {
+                        tweet: tweet,
+                        image_url: imageUrl,
+                        api_key: twitterApiKey,
+                        api_secret: twitterApiSecret,
+                        access_token: twitterAccessToken,
+                        access_secret: twitterAccessSecret
+                    },
+                    dataType: 'json',
+                    success: function(response) {
+                        $('.post-selected-btn').prop('disabled', false);
+                        if (response.error) {
+                            alert('Error: ' + response.error);
+                        } else {
+                            // Mark tweet as posted in history
+                            markTweetAsPosted(tweet, imageUrl);
+                            alert('Tweet launched into the X-verse! 🚀');
+                            setTimeout(() => {
+                                // Clear tweets container (split screen stays visible)
+                                $('#rightSide .sticky h2').text('Tweet Preview');
+                                $('#tweetsContainer').html('<div class="text-center py-12 text-white/60"><svg xmlns="http://www.w3.org/2000/svg" class="h-16 w-16 mx-auto mb-4 text-white/20" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" /></svg><p class="text-sm">Generate tweets to see previews here</p></div>');
+                                $('#generateForm')[0].reset();
+                            }, 2000);
+                        }
+                    },
+                    error: function(xhr) {
+                        $('.post-selected-btn, .history-post-btn').prop('disabled', false);
+                        let errorMsg = 'Failed to post tweet. Please try again.';
                         try {
                             const response = JSON.parse(xhr.responseText);
                             if (response.error) {
@@ -829,10 +1443,10 @@
                         } catch(e) {
                             errorMsg = xhr.responseText || errorMsg;
                         }
-                        $('#error').removeClass('hidden').find('p').last().text(errorMsg);
+                        alert('Error: ' + errorMsg);
                     }
                 });
-            });
+            }
             
             $('#postBtn').on('click', function() {
                 if (!generatedData) return;
@@ -884,12 +1498,9 @@
             
             // Scheduling functionality
             
-            // Open schedule modal
-            $('#scheduleBtn').on('click', function() {
-                if (!generatedData) {
-                    alert('Please generate a tweet first');
-                    return;
-                }
+            // Open schedule modal function
+            function openScheduleModal(tweet, imageUrl) {
+                generatedData = { tweet: tweet, image_url: imageUrl };
                 
                 // Set minimum date to now
                 const now = new Date();
@@ -900,6 +1511,15 @@
                 $('#scheduleDateTime').val(localDateTime);
                 
                 $('#scheduleModal').removeClass('hidden');
+            }
+            
+            // Keep old scheduleBtn handler for backwards compatibility (if it exists)
+            $('#scheduleBtn').on('click', function() {
+                if (!generatedData) {
+                    alert('Please generate a tweet first');
+                    return;
+                }
+                openScheduleModal(generatedData.tweet, generatedData.image_url);
             });
             
             // Cancel schedule modal
@@ -1132,9 +1752,7 @@
                                     </div>
                                     
                                     <!-- Tweet text -->
-                                    <p class="text-white/90 text-sm leading-relaxed whitespace-pre-wrap break-words">
-                                        ${escapeHtml(tweet.tweet_text)}
-                                    </p>
+                                    <p class="text-white/90 text-sm leading-relaxed whitespace-pre-wrap break-words">${escapeHtml(tweet.tweet_text.trim())}</p>
                                     
                                     <!-- Error message if failed -->
                                     ${tweet.error_message ? `
@@ -1258,6 +1876,165 @@
                     loadScheduledTweets();
                 });
             }, 30000); // Check every 30 seconds
+            
+            // Tweet History Functions
+            function saveTweetToHistory(tweet, imageUrl) {
+                let history = JSON.parse(localStorage.getItem('generatedTweetsHistory') || '[]');
+                
+                // Add new tweet to beginning of history
+                history.unshift({
+                    tweet: tweet,
+                    imageUrl: imageUrl,
+                    timestamp: new Date().toISOString(),
+                    posted: false
+                });
+                
+                // Keep only last 50 tweets
+                if (history.length > 50) {
+                    history = history.slice(0, 50);
+                }
+                
+                localStorage.setItem('generatedTweetsHistory', JSON.stringify(history));
+                loadTweetsHistory();
+            }
+            
+            function markTweetAsPosted(tweet, imageUrl) {
+                let history = JSON.parse(localStorage.getItem('generatedTweetsHistory') || '[]');
+                
+                // Find and mark the tweet as posted
+                history.forEach(item => {
+                    if (item.tweet === tweet && item.imageUrl === imageUrl) {
+                        item.posted = true;
+                        item.postedAt = new Date().toISOString();
+                    }
+                });
+                
+                localStorage.setItem('generatedTweetsHistory', JSON.stringify(history));
+                loadTweetsHistory(); // Refresh history to show the indicator
+            }
+            
+            function loadTweetsHistory() {
+                const history = JSON.parse(localStorage.getItem('generatedTweetsHistory') || '[]');
+                const historyList = $('#tweetsHistoryList');
+                const historyEmpty = $('#tweetsHistoryEmpty');
+                
+                if (history.length === 0) {
+                    historyList.empty();
+                    historyEmpty.removeClass('hidden');
+                    return;
+                }
+                
+                historyEmpty.addClass('hidden');
+                historyList.empty();
+                
+                history.forEach((item, index) => {
+                    const date = new Date(item.timestamp);
+                    const timeAgo = getTimeAgo(date);
+                    const isPosted = item.posted === true;
+                    const postedIndicator = isPosted ? `
+                        <div class="absolute top-3 right-3 bg-gradient-to-br from-neon-blue/30 to-neon-blue/20 border-2 border-neon-blue/60 rounded-full p-2 shadow-lg shadow-neon-blue/30" title="Posted to X">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7" />
+                            </svg>
+                        </div>
+                    ` : '';
+                    
+                    const historyItem = $(`
+                        <div class="bg-gradient-to-br ${isPosted ? 'from-neon-blue/10 via-black-void/40 to-neon-blue/10' : 'from-black-void/40 via-black-void/30 to-black-void/40'} border-2 ${isPosted ? 'border-neon-blue/40 shadow-lg shadow-neon-blue/10' : 'border-white/10 hover:border-white/20'} rounded-2xl p-5 transition-all duration-300 group relative backdrop-blur-sm" data-index="${index}">
+                            ${postedIndicator}
+                            <div class="flex items-start gap-4 mb-4">
+                                <div class="flex-shrink-0 w-24 h-24 rounded-2xl overflow-hidden border-2 ${isPosted ? 'border-neon-blue/30 shadow-md' : 'border-white/10'} shadow-lg">
+                                    <img src="${escapeHtml(item.imageUrl)}" alt="Product Image" class="w-full h-full object-cover">
+                                </div>
+                                <div class="flex-1 min-w-0">
+                                    <p class="text-white text-sm leading-relaxed mb-3 line-clamp-3 font-medium">${escapeHtml(item.tweet)}</p>
+                                    <div class="flex items-center gap-3 flex-wrap">
+                                        <span class="text-white/50 text-xs font-medium">${timeAgo}</span>
+                                        ${isPosted ? `<span class="px-2.5 py-1 bg-neon-blue/20 border border-neon-blue/50 rounded-full text-neon-blue text-xs font-semibold flex items-center gap-1.5 shadow-sm">
+                                            <svg xmlns="http://www.w3.org/2000/svg" class="h-3 w-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7" />
+                                            </svg>
+                                            Posted
+                                        </span>` : ''}
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="flex gap-3 pt-4 border-t ${isPosted ? 'border-neon-blue/20' : 'border-white/10'}">
+                                <button 
+                                    class="history-post-btn flex-1 py-2.5 px-4 ${isPosted ? 'bg-neon-blue/20 border-2 border-neon-blue/40 text-neon-blue cursor-not-allowed' : 'bg-neon-blue hover:bg-neon-blue/90 border-2 border-neon-blue text-white'} backdrop-blur-sm font-semibold rounded-xl transition-all hover:scale-[1.02] disabled:opacity-50 disabled:cursor-not-allowed text-xs flex items-center justify-center gap-2 shadow-lg"
+                                    data-tweet="${escapeHtml(item.tweet)}"
+                                    data-image="${escapeHtml(item.imageUrl)}"
+                                    ${isPosted ? 'disabled' : ''}
+                                    style="${isPosted ? '' : 'color: #ffffff !important;'}"
+                                >
+                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8" />
+                                    </svg>
+                                    <span>${isPosted ? 'POSTED' : 'POST IT'}</span>
+                                </button>
+                                <button 
+                                    class="history-schedule-btn flex-1 py-2.5 px-4 ${isPosted ? 'bg-glass-dark/20 border-2 border-white/10 text-white/40 cursor-not-allowed' : 'bg-neon-pink hover:bg-neon-pink/90 border-2 border-neon-pink text-white'} backdrop-blur-sm font-semibold rounded-xl transition-all hover:scale-[1.02] disabled:opacity-50 disabled:cursor-not-allowed text-xs flex items-center justify-center gap-2 shadow-lg"
+                                    data-tweet="${escapeHtml(item.tweet)}"
+                                    data-image="${escapeHtml(item.imageUrl)}"
+                                    ${isPosted ? 'disabled' : ''}
+                                    style="${isPosted ? '' : 'color: #ffffff !important;'}"
+                                >
+                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                                    </svg>
+                                    <span>${isPosted ? 'POSTED' : 'SCHEDULE'}</span>
+                                </button>
+                            </div>
+                        </div>
+                    `);
+                    
+                    historyList.append(historyItem);
+                    
+                    // Bind button events immediately after creating the element
+                    historyItem.find('.history-post-btn').on('click', function(e) {
+                        e.stopPropagation();
+                        if ($(this).prop('disabled')) return; // Don't allow clicking if already posted
+                        const tweet = $(this).data('tweet');
+                        const imageUrl = $(this).data('image');
+                        postSelectedTweet(tweet, imageUrl);
+                    });
+                    
+                    historyItem.find('.history-schedule-btn').on('click', function(e) {
+                        e.stopPropagation();
+                        if ($(this).prop('disabled')) return; // Don't allow clicking if tweet is posted
+                        const tweet = $(this).data('tweet');
+                        const imageUrl = $(this).data('image');
+                        openScheduleModal(tweet, imageUrl);
+                    });
+                });
+            }
+            
+            function getTimeAgo(date) {
+                const now = new Date();
+                const diff = now - date;
+                const seconds = Math.floor(diff / 1000);
+                const minutes = Math.floor(seconds / 60);
+                const hours = Math.floor(minutes / 60);
+                const days = Math.floor(hours / 24);
+                
+                if (seconds < 60) return 'just now';
+                if (minutes < 60) return `${minutes}m ago`;
+                if (hours < 24) return `${hours}h ago`;
+                if (days < 7) return `${days}d ago`;
+                
+                return date.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
+            }
+            
+            // Clear history button
+            $('#clearHistoryBtn').on('click', function() {
+                if (confirm('Are you sure you want to clear all generated tweet history?')) {
+                    localStorage.removeItem('generatedTweetsHistory');
+                    loadTweetsHistory();
+                }
+            });
+            
+            // Don't auto-load history on page load since it's now in a modal
+            // History will be loaded when modal is opened
             
             // Also run immediately on page load
             setTimeout(function() {

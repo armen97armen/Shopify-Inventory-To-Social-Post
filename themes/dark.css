@@ -49,3 +49,51 @@ body {
     border-color: rgba(255, 255, 255, 0.1);
     background: rgba(26, 26, 26, 0.3);
 }
+
+/* Right Side Panel - Dark Mode */
+#rightSide {
+    background-color: #000000 !important;
+    border-left-color: rgba(255, 255, 255, 0.1) !important;
+}
+
+#rightSide .sticky {
+    background-color: rgba(0, 0, 0, 0.95) !important;
+    border-bottom-color: rgba(255, 255, 255, 0.1) !important;
+}
+
+/* POST IT and SCHEDULE buttons - white text ALWAYS in both themes */
+.post-selected-btn,
+.post-selected-btn:hover,
+.post-selected-btn:focus,
+.post-selected-btn:active,
+.post-selected-btn:disabled,
+.schedule-selected-btn,
+.schedule-selected-btn:hover,
+.schedule-selected-btn:focus,
+.schedule-selected-btn:active,
+.schedule-selected-btn:disabled,
+.history-post-btn,
+.history-post-btn:hover,
+.history-post-btn:focus,
+.history-post-btn:active,
+.history-post-btn:disabled,
+.history-schedule-btn,
+.history-schedule-btn:hover,
+.history-schedule-btn:focus,
+.history-schedule-btn:active,
+.history-schedule-btn:disabled,
+#confirmScheduleBtn,
+#confirmScheduleBtn:hover,
+#confirmScheduleBtn:focus,
+#confirmScheduleBtn:active,
+#confirmScheduleBtn:disabled,
+button.bg-neon-blue,
+button.bg-neon-blue:hover,
+button.bg-neon-blue:focus,
+button.bg-neon-blue:active,
+button.bg-neon-pink,
+button.bg-neon-pink:hover,
+button.bg-neon-pink:focus,
+button.bg-neon-pink:active {
+    color: #ffffff !important;
+}
