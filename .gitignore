@@ -5,6 +5,9 @@ composer.lock
 # Sensitive configuration files (only API keys)
 config/settings.default.json
 
+# Database files (contains scheduled tweets)
+data/
+
 # IDE files
 .vscode/
 .idea/

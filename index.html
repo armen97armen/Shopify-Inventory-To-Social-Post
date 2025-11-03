@@ -432,13 +432,85 @@
                 <p id="previewTweet" class="text-white leading-relaxed whitespace-pre-wrap"></p>
             </div>
             
-            <button 
-                id="postBtn" 
-                class="post-btn w-full py-4 px-6 bg-glass-dark/60 backdrop-blur-md text-white font-bold text-lg rounded-xl transition-all duration-300 transform hover:scale-[1.005] disabled:opacity-30 disabled:cursor-not-allowed disabled:transform-none relative overflow-hidden group"
-            >
-                <span class="relative z-10">POST IT</span>
-                <div class="absolute inset-0 bg-gradient-to-r from-neon-blue/0 via-white/5 to-neon-pink/0 opacity-0 group-hover:opacity-100 transition-opacity duration-500 rounded-xl"></div>
-            </button>
+            <div class="flex gap-4">
+                <button 
+                    id="postBtn" 
+                    class="post-btn flex-1 py-4 px-6 bg-glass-dark/60 backdrop-blur-md text-white font-bold text-lg rounded-xl transition-all duration-300 transform hover:scale-[1.005] disabled:opacity-30 disabled:cursor-not-allowed disabled:transform-none relative overflow-hidden group"
+                >
+                    <span class="relative z-10">POST IT</span>
+                    <div class="absolute inset-0 bg-gradient-to-r from-neon-blue/0 via-white/5 to-neon-pink/0 opacity-0 group-hover:opacity-100 transition-opacity duration-500 rounded-xl"></div>
+                </button>
+                <button 
+                    id="scheduleBtn" 
+                    class="post-btn flex-1 py-4 px-6 bg-glass-dark/60 backdrop-blur-md text-white font-bold text-lg rounded-xl transition-all duration-300 transform hover:scale-[1.005] disabled:opacity-30 disabled:cursor-not-allowed disabled:transform-none relative overflow-hidden group"
+                >
+                    <span class="relative z-10">SCHEDULE</span>
+                    <div class="absolute inset-0 bg-gradient-to-r from-neon-blue/0 via-white/5 to-neon-pink/0 opacity-0 group-hover:opacity-100 transition-opacity duration-500 rounded-xl"></div>
+                </button>
+            </div>
+        </div>
+        
+        <!-- Scheduling Modal -->
+        <div id="scheduleModal" class="hidden fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm">
+            <div class="backdrop-blur-lg bg-glass-dark/40 border border-white/20 rounded-2xl p-8 shadow-2xl fade-in-up max-w-md w-full mx-4">
+                <h2 class="text-2xl font-bold text-white mb-6">Schedule Tweet</h2>
+                
+                <div class="mb-6">
+                    <label for="scheduleDateTime" class="block mb-2.5 text-white font-semibold text-sm tracking-tight">
+                        Date & Time
+                    </label>
+                    <input 
+                        type="datetime-local" 
+                        id="scheduleDateTime" 
+                        class="w-full px-4 py-3.5 bg-chrome-accent border border-white/30 rounded-xl text-white text-sm focus:outline-none focus:ring-2 focus:ring-neon-blue/60 focus:border-neon-blue/50 transition-all backdrop-blur-sm font-sans"
+                        required
+                    >
+                    <p class="mt-2.5 text-white/75 text-xs leading-relaxed">Select when you want this tweet to be posted.</p>
+                </div>
+                
+                <div class="flex gap-4">
+                    <button 
+                        id="confirmScheduleBtn"
+                        class="flex-1 px-6 py-3.5 bg-neon-blue hover:bg-neon-blue/90 text-white font-semibold rounded-xl transition-all hover:scale-[1.005] shadow-lg shadow-neon-blue/30 tracking-tight"
+                    >
+                        Schedule
+                    </button>
+                    <button 
+                        id="cancelScheduleBtn"
+                        class="px-6 py-3.5 bg-chrome-accent/80 hover:bg-chrome-accent border border-white/20 text-white/90 hover:text-white font-semibold rounded-xl transition-all hover:scale-[1.005] tracking-tight"
+                    >
+                        Cancel
+                    </button>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Scheduled Tweets Section -->
+        <div id="scheduledTweets" class="mt-8 backdrop-blur-lg bg-glass-dark/40 border border-white/20 rounded-2xl p-8 shadow-2xl fade-in-up">
+            <div class="flex items-center justify-between mb-6">
+                <h2 class="text-2xl font-bold text-white">Scheduled Tweets</h2>
+                <button 
+                    id="refreshScheduledBtn"
+                    class="p-2 bg-chrome-accent/60 hover:bg-chrome-accent border border-white/20 rounded-xl text-white/90 hover:text-white transition-all hover:scale-[1.02]"
+                    title="Refresh"
+                >
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
+                    </svg>
+                </button>
+            </div>
+            
+            <div id="scheduledTweetsList" class="space-y-4">
+                <!-- Scheduled tweets will be loaded here -->
+            </div>
+            
+            <div id="scheduledTweetsEmpty" class="text-center py-8 text-white/60">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-12 w-12 mx-auto mb-4 text-white/40" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                </svg>
+                <p class="text-white/60">No scheduled tweets yet.</p>
+                <p class="text-white/40 text-sm mt-2">Generate and schedule a tweet to see it here.</p>
+            </div>
         </div>
     </div>
 
@@ -809,6 +881,397 @@
                     }
                 });
             });
+            
+            // Scheduling functionality
+            
+            // Open schedule modal
+            $('#scheduleBtn').on('click', function() {
+                if (!generatedData) {
+                    alert('Please generate a tweet first');
+                    return;
+                }
+                
+                // Set minimum date to now
+                const now = new Date();
+                const localDateTime = new Date(now.getTime() - now.getTimezoneOffset() * 60000)
+                    .toISOString()
+                    .slice(0, 16);
+                $('#scheduleDateTime').attr('min', localDateTime);
+                $('#scheduleDateTime').val(localDateTime);
+                
+                $('#scheduleModal').removeClass('hidden');
+            });
+            
+            // Cancel schedule modal
+            $('#cancelScheduleBtn').on('click', function() {
+                $('#scheduleModal').addClass('hidden');
+            });
+            
+            // Close modal on backdrop click
+            $('#scheduleModal').on('click', function(e) {
+                if ($(e.target).attr('id') === 'scheduleModal') {
+                    $('#scheduleModal').addClass('hidden');
+                }
+            });
+            
+            // Confirm schedule
+            $('#confirmScheduleBtn').on('click', function() {
+                const scheduledDateTime = $('#scheduleDateTime').val();
+                
+                if (!scheduledDateTime) {
+                    alert('Please select a date and time');
+                    return;
+                }
+                
+                // Validate future date
+                // Convert datetime-local to Date object (which uses local timezone)
+                const selectedDate = new Date(scheduledDateTime);
+                const now = new Date();
+                
+                if (selectedDate <= now) {
+                    alert('Please select a date and time in the future');
+                    return;
+                }
+                
+                // Convert to ISO string with timezone for proper server-side parsing
+                // The datetime-local input is in local time, so we convert it to ISO format
+                // which includes timezone offset, so server can parse it correctly
+                const scheduledDateTimeISO = selectedDate.toISOString();
+                
+                $('#confirmScheduleBtn').prop('disabled', true).text('Scheduling...');
+                
+                $.ajax({
+                    url: 'schedule.php',
+                    type: 'POST',
+                    data: {
+                        tweet: generatedData.tweet,
+                        image_url: generatedData.image_url,
+                        shopify_url: $('#shopifyUrl').val(),
+                        scheduled_time: scheduledDateTimeISO,
+                        api_key: twitterApiKey,
+                        api_secret: twitterApiSecret,
+                        access_token: twitterAccessToken,
+                        access_secret: twitterAccessSecret
+                    },
+                    dataType: 'json',
+                    success: function(response) {
+                        if (response.error) {
+                            alert('Error: ' + response.error);
+                            $('#confirmScheduleBtn').prop('disabled', false).text('Schedule');
+                        } else {
+                            showNotification('Tweet scheduled successfully!', 'success');
+                            $('#scheduleModal').addClass('hidden');
+                            $('#confirmScheduleBtn').prop('disabled', false).text('Schedule');
+                            
+                            // Load scheduled tweets
+                            loadScheduledTweets();
+                        }
+                    },
+                    error: function(xhr) {
+                        $('#confirmScheduleBtn').prop('disabled', false).text('Schedule');
+                        
+                        let errorMsg = 'Failed to schedule tweet. Please try again.';
+                        try {
+                            const response = JSON.parse(xhr.responseText);
+                            if (response.error) {
+                                errorMsg = response.error;
+                            }
+                        } catch(e) {
+                            errorMsg = xhr.responseText || errorMsg;
+                        }
+                        alert('Error: ' + errorMsg);
+                    }
+                });
+            });
+            
+            // Load scheduled tweets
+            function loadScheduledTweets() {
+                $.ajax({
+                    url: 'get_scheduled.php',
+                    type: 'GET',
+                    dataType: 'json',
+                    success: function(response) {
+                        if (response.success && response.tweets) {
+                            displayScheduledTweets(response.tweets);
+                        }
+                    },
+                    error: function(xhr) {
+                        console.error('Failed to load scheduled tweets:', xhr);
+                    }
+                });
+            }
+            
+            // Display scheduled tweets
+            function displayScheduledTweets(tweets) {
+                const list = $('#scheduledTweetsList');
+                const empty = $('#scheduledTweetsEmpty');
+                
+                if (tweets.length === 0) {
+                    list.addClass('hidden');
+                    empty.removeClass('hidden');
+                    return;
+                }
+                
+                list.removeClass('hidden');
+                empty.addClass('hidden');
+                
+                let html = '';
+                
+                tweets.forEach(tweet => {
+                    // Parse scheduled time - use ISO format if available, otherwise parse as UTC
+                    let scheduledDate;
+                    if (tweet.scheduled_time_iso) {
+                        scheduledDate = new Date(tweet.scheduled_time_iso);
+                    } else {
+                        // If no ISO format, treat as UTC by appending 'Z' if not present
+                        const timeStr = tweet.scheduled_time;
+                        scheduledDate = new Date(timeStr.endsWith('Z') || timeStr.includes('+') || timeStr.includes('-') ? timeStr : timeStr + ' UTC');
+                    }
+                    
+                    // Format in user's local timezone
+                    const scheduledFormatted = scheduledDate.toLocaleString('en-US', {
+                        year: 'numeric',
+                        month: 'numeric',
+                        day: 'numeric',
+                        hour: 'numeric',
+                        minute: '2-digit',
+                        second: '2-digit',
+                        hour12: true
+                    });
+                    
+                    // Calculate time until/ago
+                    const now = new Date();
+                    const timeDiff = scheduledDate.getTime() - now.getTime();
+                    let timeDisplay = '';
+                    
+                    if (timeDiff > 0) {
+                        // Future
+                        const hours = Math.floor(timeDiff / (1000 * 60 * 60));
+                        const minutes = Math.floor((timeDiff % (1000 * 60 * 60)) / (1000 * 60));
+                        if (hours > 0) {
+                            timeDisplay = `in ${hours}h ${minutes}m`;
+                        } else {
+                            timeDisplay = `in ${minutes}m`;
+                        }
+                    } else {
+                        // Past
+                        const hoursAgo = Math.floor(Math.abs(timeDiff) / (1000 * 60 * 60));
+                        const minutesAgo = Math.floor(Math.abs(timeDiff) % (1000 * 60 * 60) / (1000 * 60));
+                        if (hoursAgo > 0) {
+                            timeDisplay = `${hoursAgo}h ${minutesAgo}m ago`;
+                        } else {
+                            timeDisplay = `${minutesAgo}m ago`;
+                        }
+                    }
+                    
+                    let statusBadge = '';
+                    let statusColor = '';
+                    let statusIcon = '';
+                    
+                    if (tweet.status === 'pending') {
+                        statusBadge = 'Pending';
+                        statusColor = 'bg-yellow-500/20 border-yellow-500/50 text-yellow-400';
+                        statusIcon = '⏳';
+                    } else if (tweet.status === 'posted') {
+                        statusBadge = 'Posted';
+                        statusColor = 'bg-green-500/20 border-green-500/50 text-green-400';
+                        statusIcon = '✅';
+                    } else if (tweet.status === 'failed') {
+                        statusBadge = 'Failed';
+                        statusColor = 'bg-red-500/20 border-red-500/50 text-red-400';
+                        statusIcon = '❌';
+                    } else {
+                        statusBadge = tweet.status;
+                        statusColor = 'bg-white/10 border-white/20 text-white/60';
+                        statusIcon = '⏸️';
+                    }
+                    
+                    html += `
+                        <div class="bg-chrome-accent/60 backdrop-blur-sm border border-white/20 rounded-xl p-5 hover:border-white/30 transition-all">
+                            <div class="flex gap-4">
+                                <!-- Image -->
+                                <div class="flex-shrink-0">
+                                    <img 
+                                        src="${escapeHtml(tweet.image_url)}" 
+                                        alt="Scheduled tweet image" 
+                                        class="w-32 h-32 object-cover rounded-xl border border-white/20"
+                                        onerror="this.src='https://via.placeholder.com/128x128?text=Image'"
+                                    >
+                                </div>
+                                
+                                <!-- Content -->
+                                <div class="flex-1 min-w-0">
+                                    <!-- Header with status and time -->
+                                    <div class="flex items-start justify-between mb-3">
+                                        <div class="flex items-center gap-3 flex-wrap">
+                                            <span class="px-2.5 py-1 rounded-lg text-xs font-semibold border ${statusColor} flex items-center gap-1.5">
+                                                <span>${statusIcon}</span>
+                                                <span>${statusBadge}</span>
+                                            </span>
+                                            <div class="flex items-center gap-2 text-white/60 text-xs">
+                                                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                                                </svg>
+                                                <span>${timeDisplay}</span>
+                                            </div>
+                                        </div>
+                                        ${tweet.status === 'pending' ? `
+                                            <button 
+                                                class="cancel-schedule-btn px-3 py-1.5 bg-red-500/20 hover:bg-red-500/30 border border-red-500/50 text-red-400 rounded-lg text-xs font-semibold transition-all whitespace-nowrap"
+                                                data-id="${tweet.id}"
+                                                title="Cancel"
+                                            >
+                                                Cancel
+                                            </button>
+                                        ` : ''}
+                                    </div>
+                                    
+                                    <!-- Scheduled time -->
+                                    <div class="text-white/50 text-xs mb-3">
+                                        Scheduled for: ${scheduledFormatted}
+                                    </div>
+                                    
+                                    <!-- Tweet text -->
+                                    <p class="text-white/90 text-sm leading-relaxed whitespace-pre-wrap break-words">
+                                        ${escapeHtml(tweet.tweet_text)}
+                                    </p>
+                                    
+                                    <!-- Error message if failed -->
+                                    ${tweet.error_message ? `
+                                        <div class="mt-3 p-3 bg-red-500/10 border border-red-500/30 rounded-lg">
+                                            <div class="flex items-start gap-2">
+                                                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-red-400 mt-0.5 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                                                </svg>
+                                                <p class="text-red-400 text-xs leading-relaxed">${escapeHtml(tweet.error_message)}</p>
+                                            </div>
+                                        </div>
+                                    ` : ''}
+                                    
+                                    <!-- Posted timestamp if posted -->
+                                    ${tweet.status === 'posted' && tweet.posted_at ? `
+                                        <div class="mt-3 text-green-400/80 text-xs flex items-center gap-1.5">
+                                            <svg xmlns="http://www.w3.org/2000/svg" class="h-3 w-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
+                                            </svg>
+                                            <span>Posted at: ${(() => {
+                                                const postedDate = tweet.posted_at_iso ? new Date(tweet.posted_at_iso) : new Date(tweet.posted_at);
+                                                return postedDate.toLocaleString('en-US', {
+                                                    year: 'numeric',
+                                                    month: 'numeric',
+                                                    day: 'numeric',
+                                                    hour: 'numeric',
+                                                    minute: '2-digit',
+                                                    second: '2-digit',
+                                                    hour12: true
+                                                });
+                                            })()}</span>
+                                        </div>
+                                    ` : ''}
+                                </div>
+                            </div>
+                        </div>
+                    `;
+                });
+                
+                list.html(html);
+                
+                // Bind cancel buttons
+                $('.cancel-schedule-btn').on('click', function() {
+                    const id = $(this).data('id');
+                    cancelScheduledTweet(id);
+                });
+            }
+            
+            // Cancel scheduled tweet
+            function cancelScheduledTweet(id) {
+                if (!confirm('Are you sure you want to cancel this scheduled tweet?')) {
+                    return;
+                }
+                
+                $.ajax({
+                    url: 'cancel_schedule.php',
+                    type: 'POST',
+                    data: { id: id },
+                    dataType: 'json',
+                    success: function(response) {
+                        if (response.error) {
+                            alert('Error: ' + response.error);
+                        } else {
+                            showNotification('Scheduled tweet cancelled', 'success');
+                            loadScheduledTweets();
+                        }
+                    },
+                    error: function(xhr) {
+                        let errorMsg = 'Failed to cancel scheduled tweet.';
+                        try {
+                            const response = JSON.parse(xhr.responseText);
+                            if (response.error) {
+                                errorMsg = response.error;
+                            }
+                        } catch(e) {
+                            errorMsg = xhr.responseText || errorMsg;
+                        }
+                        alert('Error: ' + errorMsg);
+                    }
+                });
+            }
+            
+            // Refresh scheduled tweets button
+            $('#refreshScheduledBtn').on('click', function() {
+                loadScheduledTweets();
+                showNotification('Scheduled tweets refreshed', 'success');
+            });
+            
+            // Escape HTML helper
+            function escapeHtml(text) {
+                const div = document.createElement('div');
+                div.textContent = text;
+                return div.innerHTML;
+            }
+            
+            // Load scheduled tweets on page load
+            loadScheduledTweets();
+            
+            // Auto-refresh scheduled tweets list every 10 seconds
+            setInterval(function() {
+                loadScheduledTweets();
+            }, 10000); // Refresh every 10 seconds
+            
+            // Auto-check for due tweets every 30 seconds (less frequent to avoid overload)
+            setInterval(function() {
+                // Run scheduler to check and post due tweets
+                $.ajax({
+                    url: 'run_scheduler.php',
+                    type: 'GET',
+                    dataType: 'json',
+                    timeout: 10000, // 10 second timeout
+                    success: function(response) {
+                        // Silently check - if tweets were posted, they'll show up on next refresh
+                    },
+                    error: function(xhr) {
+                        // Silently fail - cron job might not be set up yet
+                        console.log('Scheduler check completed (errors are normal if cron is not set up)');
+                    }
+                }).always(function() {
+                    // Refresh scheduled tweets list after running scheduler
+                    loadScheduledTweets();
+                });
+            }, 30000); // Check every 30 seconds
+            
+            // Also run immediately on page load
+            setTimeout(function() {
+                $.ajax({
+                    url: 'run_scheduler.php',
+                    type: 'GET',
+                    timeout: 10000,
+                    error: function() {
+                        console.log('Scheduler check completed');
+                    }
+                }).always(function() {
+                    loadScheduledTweets();
+                });
+            }, 2000); // Wait 2 seconds after page load
         });
     </script>
 </body>
