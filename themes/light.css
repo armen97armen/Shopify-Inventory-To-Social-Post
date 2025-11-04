@@ -47,6 +47,12 @@ body {
     background-color: rgba(255, 255, 255, 0.9) !important;
 }
 
+/* Plain chrome-accent should be white in light mode */
+.bg-chrome-accent {
+    background-color: #ffffff !important;
+}
+
+/* Chrome-accent with opacity should be light gray */
 .bg-chrome-accent\/40,
 .bg-chrome-accent\/60,
 .bg-chrome-accent\/80 {
@@ -691,4 +697,50 @@ button[class*="bg-neon-pink"] * {
 
 .tweet-wireframe .text-neon-blue\/60 {
     color: rgba(0, 102, 204, 0.7) !important;
+}
+
+/* Inventory Page - Light Mode Specific Overrides */
+/* Ensure inputs have proper styling */
+input[type="text"],
+input[type="number"],
+select {
+    background-color: #ffffff !important;
+    color: #1a1a1a !important;
+    border-color: rgba(0, 0, 0, 0.2) !important;
+}
+
+input[type="text"]:focus,
+input[type="number"]:focus,
+select:focus {
+    background-color: #ffffff !important;
+    border-color: #0066cc !important;
+    box-shadow: 0 0 0 2px rgba(0, 102, 204, 0.1) !important;
+}
+
+input[type="text"]::placeholder,
+input[type="number"]::placeholder {
+    color: rgba(26, 26, 26, 0.5) !important;
+}
+
+/* Ensure select dropdowns have white backgrounds */
+select option {
+    background-color: #ffffff !important;
+    color: #1a1a1a !important;
+}
+
+/* Clear All button text color fix */
+#clearFiltersBtn {
+    color: #1a1a1a !important;
+}
+
+/* Example button styling */
+#exampleSearchBtn {
+    background-color: #f5f5f5 !important;
+    color: #1a1a1a !important;
+    border-color: rgba(0, 0, 0, 0.15) !important;
+}
+
+#exampleSearchBtn:hover {
+    background-color: #e5e5e5 !important;
+    color: #1a1a1a !important;
 }

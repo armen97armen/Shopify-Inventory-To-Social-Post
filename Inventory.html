@@ -1,0 +1,848 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Shopify Inventory</title>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="css/base.css">
+    <script>
+        // Set theme BEFORE page loads to prevent flash
+        const savedTheme = localStorage.getItem('theme') || 'dark';
+        document.write('<link id="theme-stylesheet" rel="stylesheet" href="themes/' + savedTheme + '.css">');
+    </script>
+    <style>
+        @keyframes orbit-spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        @keyframes star-pulse {
+            0%, 100% { opacity: 0.4; }
+            50% { opacity: 0.8; }
+        }
+        @keyframes fade-in-up {
+            0% { opacity: 0; transform: translateY(20px); }
+            100% { opacity: 1; transform: translateY(0); }
+        }
+        @keyframes float {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-10px); }
+        }
+        @keyframes shimmer {
+            0% { background-position: -200% 0; }
+            100% { background-position: 200% 0; }
+        }
+        .orbit-spin { animation: orbit-spin 20s linear infinite; }
+        .star-pulse { animation: star-pulse 3s ease-in-out infinite; }
+        .fade-in-up { animation: fade-in-up 0.5s ease-out; }
+        .float { animation: float 3s ease-in-out infinite; }
+        .animate-shimmer { animation: shimmer 2s ease-in-out infinite; }
+    </style>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        'black-void': '#000000',
+                        'dark-carbon': '#0a0a0a',
+                        'glass-dark': '#1a1a1a',
+                        'chrome-accent': '#2a2a2a',
+                        'neon-blue': '#0080ff',
+                        'neon-pink': '#ff0080',
+                    },
+                    fontFamily: {
+                        'sans': ['Inter', 'system-ui', 'sans-serif'],
+                    },
+                }
+            }
+        }
+    </script>
+</head>
+<body class="min-h-screen bg-black-void dark:bg-black-void light:bg-white font-sans">
+    <!-- Subtle gradient overlay -->
+    <div class="fixed inset-0 bg-gradient-to-b from-black-void via-dark-carbon to-black-void dark:from-black-void dark:via-dark-carbon dark:to-black-void light:from-white light:via-gray-50 light:to-white pointer-events-none"></div>
+    
+    <!-- Navigation Bar -->
+    <?php include __DIR__ . '/components/navbar.html'; ?>
+    
+    <!-- Main Container -->
+    <div class="fixed inset-0 top-20 z-10 overflow-y-auto">
+        <div class="max-w-[1200px] mx-auto px-6 py-16">
+            <!-- Title -->
+            <div class="flex items-center justify-center mb-12">
+                <h1 class="text-5xl md:text-7xl lg:text-8xl font-bold text-center bg-clip-text text-transparent bg-gradient-to-r from-neon-blue to-neon-pink dark:from-neon-blue dark:to-neon-pink light:from-blue-600 light:to-pink-600 floating">
+                    Shopify Inventory
+                    <span class="block text-2xl md:text-3xl font-normal mt-4 text-white/40 dark:text-white/40 light:text-gray-600 tracking-tight">
+                        View Your Store Inventory
+                    </span>
+                </h1>
+            </div>
+            
+            <!-- Filter and Fetch Section -->
+            <div class="mb-8 backdrop-blur-lg bg-glass-dark/40 border border-white/20 dark:bg-glass-dark/40 dark:border-white/20 light:bg-white/90 light:border-black/10 rounded-2xl p-8 shadow-2xl fade-in-up">
+                <div class="text-center mb-8">
+                    <h2 class="text-2xl font-bold text-white dark:text-white light:text-gray-900 mb-4 tracking-tight">AI-Powered Inventory Search</h2>
+                    <p class="text-white/70 dark:text-white/70 light:text-gray-600 mb-6 text-sm">Search and filter your inventory using natural language queries</p>
+                </div>
+                
+                <!-- Advanced Filter System -->
+                <div id="filterSection" class="border-t border-white/10 dark:border-white/10 light:border-black/10 pt-8 mt-8">
+                    <!-- AI Natural Language Input -->
+                    <div class="mb-8">
+                        <label class="block text-white/90 dark:text-white/90 light:text-gray-900 text-base font-bold mb-4 tracking-tight">AI Assistant</label>
+                        <div class="flex flex-col sm:flex-row gap-4 mb-4">
+                            <input 
+                                type="text" 
+                                id="aiFilterInput"
+                                placeholder="Tell me what you're looking for... e.g., 'products under $50 with high stock'"
+                                class="flex-1 w-full px-5 py-3.5 bg-chrome-accent dark:bg-chrome-accent light:bg-gray-50 border border-white/30 dark:border-white/30 light:border-gray-300 rounded-xl text-white dark:text-white light:text-gray-900 text-sm placeholder-white/50 dark:placeholder-white/50 light:placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-neon-blue/60 focus:border-neon-blue/50 transition-all backdrop-blur-sm min-w-0"
+                            >
+                            <button 
+                                id="applyAIFilterBtn"
+                                class="px-8 py-3.5 bg-neon-pink hover:bg-neon-pink/90 text-white font-bold rounded-xl border border-neon-pink/50 transition-all hover:scale-[1.02] whitespace-nowrap shadow-lg text-sm min-w-[160px]"
+                            >
+                                Apply AI Settings
+                            </button>
+                        </div>
+                        <p class="text-white/60 dark:text-white/60 light:text-gray-500 text-xs mt-2">The AI will adjust the filters below based on your request</p>
+                    </div>
+
+                    <!-- Manual Filter Controls -->
+                    <div class="mb-8">
+                        <label class="block text-white/90 dark:text-white/90 light:text-gray-900 text-base font-bold mb-6 tracking-tight">Manual Filter Controls</label>
+                        
+                        <!-- Range Filters Row -->
+                        <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
+                            <!-- Quantity Range -->
+                            <div class="space-y-3">
+                                <label class="block text-white/90 dark:text-white/90 light:text-gray-900 text-sm font-semibold">Quantity Range</label>
+                                <div class="flex items-center gap-4">
+                                    <input 
+                                        type="number" 
+                                        id="quantityMin" 
+                                        placeholder="Min" 
+                                        min="0" 
+                                        class="flex-1 min-w-0 px-4 py-3 bg-chrome-accent dark:bg-chrome-accent light:bg-gray-50 border border-white/30 dark:border-white/30 light:border-gray-300 rounded-lg text-white dark:text-white light:text-gray-900 text-sm focus:outline-none focus:ring-2 focus:ring-neon-blue/60 focus:border-neon-blue/50 transition-all"
+                                    >
+                                    <span class="text-white/60 dark:text-white/60 light:text-gray-500 text-sm font-medium flex-shrink-0 px-2">to</span>
+                                    <input 
+                                        type="number" 
+                                        id="quantityMax" 
+                                        placeholder="Max" 
+                                        min="0" 
+                                        class="flex-1 min-w-0 px-4 py-3 bg-chrome-accent dark:bg-chrome-accent light:bg-gray-50 border border-white/30 dark:border-white/30 light:border-gray-300 rounded-lg text-white dark:text-white light:text-gray-900 text-sm focus:outline-none focus:ring-2 focus:ring-neon-blue/60 focus:border-neon-blue/50 transition-all"
+                                    >
+                                </div>
+                            </div>
+
+                            <!-- Price Range -->
+                            <div class="space-y-3">
+                                <label class="block text-white/90 dark:text-white/90 light:text-gray-900 text-sm font-semibold">Price Range ($)</label>
+                                <div class="flex items-center gap-4">
+                                    <input 
+                                        type="number" 
+                                        id="priceMin" 
+                                        placeholder="Min" 
+                                        min="0" 
+                                        step="0.01" 
+                                        class="flex-1 min-w-0 px-4 py-3 bg-chrome-accent dark:bg-chrome-accent light:bg-gray-50 border border-white/30 dark:border-white/30 light:border-gray-300 rounded-lg text-white dark:text-white light:text-gray-900 text-sm focus:outline-none focus:ring-2 focus:ring-neon-blue/60 focus:border-neon-blue/50 transition-all"
+                                    >
+                                    <span class="text-white/60 dark:text-white/60 light:text-gray-500 text-sm font-medium flex-shrink-0 px-2">to</span>
+                                    <input 
+                                        type="number" 
+                                        id="priceMax" 
+                                        placeholder="Max" 
+                                        min="0" 
+                                        step="0.01" 
+                                        class="flex-1 min-w-0 px-4 py-3 bg-chrome-accent dark:bg-chrome-accent light:bg-gray-50 border border-white/30 dark:border-white/30 light:border-gray-300 rounded-lg text-white dark:text-white light:text-gray-900 text-sm focus:outline-none focus:ring-2 focus:ring-neon-blue/60 focus:border-neon-blue/50 transition-all"
+                                    >
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Other Filters Row -->
+                        <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                            <!-- Status Filter -->
+                            <div class="space-y-3">
+                                <label class="block text-white/90 dark:text-white/90 light:text-gray-900 text-sm font-semibold">Status</label>
+                                <select 
+                                    id="statusFilter" 
+                                    class="w-full px-4 py-3 bg-chrome-accent dark:bg-chrome-accent light:bg-gray-50 border border-white/30 dark:border-white/30 light:border-gray-300 rounded-lg text-white dark:text-white light:text-gray-900 text-sm focus:outline-none focus:ring-2 focus:ring-neon-blue/60 focus:border-neon-blue/50 transition-all cursor-pointer"
+                                >
+                                    <option value="">All Statuses</option>
+                                    <option value="in_stock">In Stock</option>
+                                    <option value="low_stock">Low Stock</option>
+                                    <option value="out_of_stock">Out of Stock</option>
+                                </select>
+                            </div>
+
+                            <!-- Product Name Search -->
+                            <div class="space-y-3">
+                                <label class="block text-white/90 dark:text-white/90 light:text-gray-900 text-sm font-semibold">Product Name</label>
+                                <input 
+                                    type="text" 
+                                    id="productNameFilter" 
+                                    placeholder="Search products..." 
+                                    autocomplete="off"
+                                    autocorrect="off"
+                                    autocapitalize="off"
+                                    spellcheck="false"
+                                    class="w-full px-4 py-3 bg-chrome-accent dark:bg-chrome-accent light:bg-gray-50 border border-white/30 dark:border-white/30 light:border-gray-300 rounded-lg text-white dark:text-white light:text-gray-900 text-sm focus:outline-none focus:ring-2 focus:ring-neon-blue/60 focus:border-neon-blue/50 transition-all"
+                                >
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Filter Actions -->
+                    <div class="flex flex-wrap items-center gap-4 pt-4 border-t border-white/10 dark:border-white/10 light:border-black/10">
+                        <button 
+                            id="applyFiltersBtn" 
+                            class="px-8 py-3.5 bg-neon-blue hover:bg-neon-blue/90 text-white font-bold rounded-xl border border-neon-blue/50 transition-all hover:scale-[1.02] shadow-lg text-sm"
+                        >
+                            Apply Filters
+                        </button>
+                        <button 
+                            id="clearFiltersBtn" 
+                            class="px-8 py-3.5 bg-glass-dark/60 hover:bg-glass-dark/80 dark:bg-glass-dark/60 dark:hover:bg-glass-dark/80 light:bg-gray-100 light:hover:bg-gray-200 text-white dark:text-white light:text-gray-700 font-bold rounded-xl border border-white/20 dark:border-white/20 light:border-gray-300 transition-all hover:scale-[1.02] text-sm"
+                        >
+                            Clear All
+                        </button>
+                    </div>
+                </div>
+                
+                <!-- Debug Section (temporary) -->
+                <div id="debugSection" class="mt-6 border-t border-white/10 dark:border-white/10 light:border-black/10 pt-6">
+                    <div class="mb-4">
+                        <button id="toggleDebugBtn" class="px-4 py-2 bg-gray-700 hover:bg-gray-600 dark:bg-gray-700 dark:hover:bg-gray-600 light:bg-gray-200 light:hover:bg-gray-300 text-white dark:text-white light:text-gray-900 text-sm font-medium rounded-lg transition-all">
+                            Toggle AI Debug Info
+                        </button>
+                    </div>
+                    <div id="debugContent" class="hidden">
+                        <div class="mb-4">
+                            <label class="block text-white/90 dark:text-white/90 light:text-gray-900 text-sm font-semibold mb-2">Original Input:</label>
+                            <pre id="correctorOriginal" class="bg-gray-900 dark:bg-gray-900 light:bg-gray-100 border border-gray-700 dark:border-gray-700 light:border-gray-300 rounded-lg p-4 text-xs text-gray-300 dark:text-gray-300 light:text-gray-800 overflow-auto max-h-32 whitespace-pre-wrap font-mono"></pre>
+                        </div>
+                        <div class="mb-4">
+                            <label class="block text-white/90 dark:text-white/90 light:text-gray-900 text-sm font-semibold mb-2">Raw AI Output:</label>
+                            <pre id="correctorRawOutput" class="bg-gray-900 dark:bg-gray-900 light:bg-gray-100 border border-gray-700 dark:border-gray-700 light:border-gray-300 rounded-lg p-4 text-xs text-gray-300 dark:text-gray-300 light:text-gray-800 overflow-auto max-h-96 whitespace-pre-wrap font-mono"></pre>
+                        </div>
+                        <div>
+                            <label class="block text-white/90 dark:text-white/90 light:text-gray-900 text-sm font-semibold mb-2">Corrected Input:</label>
+                            <pre id="correctorCorrected" class="bg-gray-900 dark:bg-gray-900 light:bg-gray-100 border border-gray-700 dark:border-gray-700 light:border-gray-300 rounded-lg p-4 text-xs text-gray-300 dark:text-gray-300 light:text-gray-800 overflow-auto max-h-32 whitespace-pre-wrap font-mono"></pre>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Loading State -->
+            <div id="loadingState" class="hidden backdrop-blur-lg bg-glass-dark/40 dark:bg-glass-dark/40 light:bg-white/90 border border-white/20 dark:border-white/20 light:border-gray-200 rounded-2xl p-8 shadow-2xl">
+                <div class="flex items-center justify-center gap-4">
+                    <div class="w-8 h-8 border-4 border-neon-blue/20 border-t-neon-blue rounded-full animate-spin"></div>
+                    <p id="loadingMessage" class="text-white/90 dark:text-white/90 light:text-gray-900 text-lg font-medium">Loading inventory data...</p>
+                </div>
+            </div>
+            
+            <!-- Error State -->
+            <div id="errorState" class="hidden backdrop-blur-lg bg-glass-dark/40 dark:bg-glass-dark/40 light:bg-white/90 border border-red-500/50 dark:border-red-500/50 light:border-red-300 rounded-2xl p-8 shadow-2xl">
+                <div class="flex items-start gap-4">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-red-400 dark:text-red-400 light:text-red-600 flex-shrink-0 mt-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                    </svg>
+                    <div class="flex-1">
+                        <h3 class="text-xl font-bold text-red-400 dark:text-red-400 light:text-red-600 mb-2">Error Loading Inventory</h3>
+                        <p id="errorMessage" class="text-white/80 dark:text-white/80 light:text-gray-700 text-sm leading-relaxed"></p>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Inventory Display -->
+            <div id="inventoryContainer" class="hidden">
+                <div class="backdrop-blur-lg bg-glass-dark/40 dark:bg-glass-dark/40 light:bg-white/90 border border-white/20 dark:border-white/20 light:border-gray-200 rounded-2xl p-8 shadow-2xl">
+                    <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-6 pb-4 border-b border-white/10 dark:border-white/10 light:border-gray-200">
+                        <h2 class="text-2xl font-bold text-white dark:text-white light:text-gray-900 tracking-tight">Inventory Overview</h2>
+                        <div class="text-white/60 dark:text-white/60 light:text-gray-500 text-sm" id="lastUpdated"></div>
+                    </div>
+                    
+                    <!-- Summary Stats -->
+                    <div id="summaryStats" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 mb-8"></div>
+                    
+                    <!-- Products Table -->
+                    <div class="overflow-x-auto rounded-xl border border-white/10 dark:border-white/10 light:border-gray-200">
+                        <table class="w-full">
+                            <thead>
+                                <tr class="border-b border-white/10 dark:border-white/10 light:border-gray-200 bg-chrome-accent/40 dark:bg-chrome-accent/40 light:bg-gray-50">
+                                    <th class="text-left py-4 px-4 text-white/90 dark:text-white/90 light:text-gray-900 font-semibold text-sm">Product</th>
+                                    <th class="text-left py-4 px-4 text-white/90 dark:text-white/90 light:text-gray-900 font-semibold text-sm">SKU</th>
+                                    <th class="text-right py-4 px-4 text-white/90 dark:text-white/90 light:text-gray-900 font-semibold text-sm">Price</th>
+                                    <th class="text-right py-4 px-4 text-white/90 dark:text-white/90 light:text-gray-900 font-semibold text-sm">Available</th>
+                                    <th class="text-right py-4 px-4 text-white/90 dark:text-white/90 light:text-gray-900 font-semibold text-sm">Status</th>
+                                    <th class="text-center py-4 px-4 text-white/90 dark:text-white/90 light:text-gray-900 font-semibold text-sm">Link</th>
+                                </tr>
+                            </thead>
+                            <tbody id="inventoryTableBody" class="text-white/80 dark:text-white/80 light:text-gray-700 text-sm divide-y divide-white/5 dark:divide-white/5 light:divide-gray-200">
+                                <!-- Inventory items will be inserted here -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <script>
+        $(document).ready(function() {
+            // Theme Toggle Functionality
+            function updateTheme(theme) {
+                const themeSheet = $('#theme-stylesheet');
+                themeSheet.attr('href', 'themes/' + theme + '.css');
+                
+                const sunIcon = $('#sunIcon');
+                const moonIcon = $('#moonIcon');
+                
+                if (theme === 'dark') {
+                    sunIcon.removeClass('hidden');
+                    moonIcon.addClass('hidden');
+                } else {
+                    sunIcon.addClass('hidden');
+                    moonIcon.removeClass('hidden');
+                }
+            }
+            
+            const currentTheme = localStorage.getItem('theme') || 'dark';
+            updateTheme(currentTheme);
+            
+            $('#themeToggleBtn').on('click', function() {
+                const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
+                localStorage.setItem('theme', newTheme);
+                updateTheme(newTheme);
+            });
+            
+            // Auto-fetch inventory on page load (store it for AI filtering)
+            let isInventoryLoaded = false;
+            let inventoryLoadPromise = null;
+            
+            // Automatically load and display inventory on page load
+            fetchInventory('inventory', true).catch(function(error) {
+                console.error('Failed to load inventory on page load:', error);
+            });
+            
+            function fetchInventory(endpoint = 'inventory', showResults = false) {
+                // Return existing promise if already loading
+                if (inventoryLoadPromise && !isInventoryLoaded) {
+                    return inventoryLoadPromise;
+                }
+                
+                // Hide previous states
+                $('#inventoryContainer').addClass('hidden');
+                $('#errorState').addClass('hidden');
+                $('#loadingState').removeClass('hidden');
+                $('#loadingMessage').text('Loading inventory data...');
+                
+                // Create and return promise
+                inventoryLoadPromise = new Promise(function(resolve, reject) {
+                    // Use PHP backend proxy to handle Shopify API calls
+                    // Backend will use credentials from config/settings.default.json ONLY
+                    $.ajax({
+                        url: 'shopify_inventory.php',
+                        method: 'POST',
+                        data: {
+                            endpoint: endpoint
+                        },
+                        dataType: 'json',
+                        timeout: 60000,
+                        success: function(response) {
+                            if (response.success && response.inventory) {
+                                // Store full inventory for AI filtering
+                                fullInventoryData = response.inventory;
+                                isInventoryLoaded = true;
+                                
+                                if (showResults) {
+                                    displayInventory(response.inventory, response.summary, endpoint);
+                                }
+                                resolve(response.inventory);
+                            } else {
+                                const error = response.error || 'Failed to fetch inventory data.';
+                                showError(error);
+                                reject(new Error(error));
+                            }
+                        },
+                        error: function(xhr, status, error) {
+                            let errorMsg = 'Failed to fetch inventory data. ';
+                            if (xhr.status === 400) {
+                                try {
+                                    const errorResponse = JSON.parse(xhr.responseText);
+                                    errorMsg = errorResponse.error || errorMsg;
+                                } catch (e) {
+                                    errorMsg += error || 'Unknown error occurred.';
+                                }
+                            } else if (xhr.status === 401) {
+                                errorMsg = 'Authentication failed. Please check your API access token in config/settings.default.json.';
+                            } else if (xhr.status === 404) {
+                                errorMsg = 'Store not found. Please check your store URL in config/settings.default.json.';
+                            } else if (xhr.status === 403) {
+                                errorMsg = 'Access denied. Please ensure your API token has inventory read permissions.';
+                            } else {
+                                errorMsg += error || 'Unknown error occurred.';
+                            }
+                            showError(errorMsg);
+                            reject(new Error(errorMsg));
+                        }
+                    });
+                });
+                
+                return inventoryLoadPromise;
+            }
+            
+            // Store full inventory for filtering
+            let fullInventoryData = null;
+            
+            // AI Filter Interpreter - converts natural language to filter parameters
+            $('#applyAIFilterBtn').on('click', function() {
+                const originalQuery = $('#aiFilterInput').val().trim();
+                if (!originalQuery) {
+                    alert('Please enter a query for the AI assistant');
+                    return;
+                }
+                
+                // Reset all filters before applying new AI search
+                $('#quantityMin').val('');
+                $('#quantityMax').val('');
+                $('#priceMin').val('');
+                $('#priceMax').val('');
+                $('#statusFilter').val('');
+                $('#productNameFilter').val('');
+                
+                $('#loadingState').removeClass('hidden');
+                $('#loadingMessage').text('Correcting input...');
+                
+                // Correct the AI Assistant input before sending to interpreter
+                correctInput(originalQuery, function(correctedQuery) {
+                    // Update the AI Assistant input field with corrected text
+                    $('#aiFilterInput').val(correctedQuery);
+                    
+                    // Update debug info
+                    $('#correctorOriginal').text('Original Input: ' + originalQuery);
+                    $('#correctorCorrected').text('Corrected Input: ' + correctedQuery);
+                    
+                    $('#loadingMessage').text('AI is interpreting your request...');
+                    
+                    $.ajax({
+                        url: 'ai_filter_interpreter.php',
+                        method: 'POST',
+                        data: {
+                            query: correctedQuery
+                        },
+                        dataType: 'json',
+                        timeout: 60000,
+                        success: function(response) {
+                            if (response.success && response.filters) {
+                                // Populate filter controls with AI's response
+                                applyFiltersToUI(response.filters);
+                                // Auto-apply the filters
+                                applyFilters();
+                            } else {
+                                showError(response.error || 'Failed to interpret query');
+                            }
+                        },
+                        error: function(xhr, status, error) {
+                            let errorMsg = 'Failed to interpret query. ';
+                            if (xhr.status === 400) {
+                                try {
+                                    const errorResponse = JSON.parse(xhr.responseText);
+                                    errorMsg = errorResponse.error || errorMsg;
+                                } catch (e) {
+                                    errorMsg += error || 'Unknown error occurred.';
+                                }
+                            } else {
+                                errorMsg += error || 'Unknown error occurred.';
+                            }
+                            showError(errorMsg);
+                        }
+                    });
+                });
+            });
+            
+            // Manual Filter Controls
+            $('#applyFiltersBtn').on('click', function() {
+                applyFilters();
+            });
+            
+            $('#clearFiltersBtn').on('click', function() {
+                clearFilters();
+            });
+            
+            // Allow Enter key in AI input to trigger interpreter
+            $('#aiFilterInput').on('keypress', function(e) {
+                if (e.which === 13) { // Enter key
+                    e.preventDefault();
+                    $('#applyAIFilterBtn').click();
+                }
+            });
+            
+            // Real-time search with debouncing
+            let searchTimeout = null;
+            
+            // Real-time filter on product name input
+            $('#productNameFilter').on('input', function() {
+                clearTimeout(searchTimeout);
+                searchTimeout = setTimeout(function() {
+                    applyFilters();
+                }, 300); // Wait 300ms after user stops typing
+            });
+            
+            // Real-time filter on status change
+            $('#statusFilter').on('change', function() {
+                applyFilters();
+            });
+            
+            // Real-time filter on quantity/price inputs with debouncing
+            $('#quantityMin, #quantityMax, #priceMin, #priceMax').on('input', function() {
+                clearTimeout(searchTimeout);
+                searchTimeout = setTimeout(function() {
+                    applyFilters();
+                }, 500); // Wait 500ms for numeric inputs (slightly longer)
+            });
+            
+            // Submit search on Enter key (works for all filter inputs)
+            $(document).on('keydown', '#quantityMin, #quantityMax, #priceMin, #priceMax, #productNameFilter, #statusFilter', function(e) {
+                if (e.key === 'Enter' || e.keyCode === 13) {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    clearTimeout(searchTimeout);
+                    applyFilters();
+                }
+            });
+            
+            // Debug toggle
+            $('#toggleDebugBtn').on('click', function() {
+                $('#debugContent').toggleClass('hidden');
+            });
+            
+            // Apply filters to UI controls
+            function applyFiltersToUI(filters) {
+                // Only set values that are explicitly provided (not null/undefined)
+                if (filters.quantityMin !== null && filters.quantityMin !== undefined) {
+                    $('#quantityMin').val(filters.quantityMin);
+                } else {
+                    $('#quantityMin').val('');
+                }
+                if (filters.quantityMax !== null && filters.quantityMax !== undefined) {
+                    $('#quantityMax').val(filters.quantityMax);
+                } else {
+                    $('#quantityMax').val('');
+                }
+                if (filters.priceMin !== null && filters.priceMin !== undefined) {
+                    $('#priceMin').val(filters.priceMin);
+                } else {
+                    $('#priceMin').val('');
+                }
+                if (filters.priceMax !== null && filters.priceMax !== undefined) {
+                    $('#priceMax').val(filters.priceMax);
+                } else {
+                    $('#priceMax').val('');
+                }
+                if (filters.status) {
+                    $('#statusFilter').val(filters.status);
+                } else {
+                    $('#statusFilter').val('');
+                }
+                if (filters.productName) {
+                    $('#productNameFilter').val(filters.productName);
+                } else {
+                    $('#productNameFilter').val('');
+                }
+            }
+            
+            // Get filter parameters from UI
+            function getFiltersFromUI() {
+                return {
+                    quantityMin: $('#quantityMin').val() ? parseInt($('#quantityMin').val()) : null,
+                    quantityMax: $('#quantityMax').val() ? parseInt($('#quantityMax').val()) : null,
+                    priceMin: $('#priceMin').val() ? parseFloat($('#priceMin').val()) : null,
+                    priceMax: $('#priceMax').val() ? parseFloat($('#priceMax').val()) : null,
+                    status: $('#statusFilter').val() || null,
+                    productName: $('#productNameFilter').val().trim() || null
+                };
+            }
+            
+            // Clear all filters
+            function clearFilters() {
+                $('#quantityMin').val('');
+                $('#quantityMax').val('');
+                $('#priceMin').val('');
+                $('#priceMax').val('');
+                $('#statusFilter').val('');
+                $('#productNameFilter').val('');
+                $('#aiFilterInput').val('');
+                
+                // Show all products
+                if (isInventoryLoaded && fullInventoryData) {
+                    displayInventory(fullInventoryData, {
+                        total_products: fullInventoryData.length,
+                        total_available: fullInventoryData.reduce((sum, item) => sum + (item.available_quantity || 0), 0),
+                        low_stock_items: fullInventoryData.filter(item => (item.available_quantity || 0) > 0 && (item.available_quantity || 0) < 10).length
+                    }, 'inventory');
+                }
+            }
+            
+            // Apply filters to inventory
+            function applyFilters() {
+                if (!isInventoryLoaded || !fullInventoryData || fullInventoryData.length === 0) {
+                    // Fetch inventory first
+                    $('#loadingState').removeClass('hidden');
+                    $('#loadingMessage').text('Loading inventory data...');
+                    fetchInventory('inventory', false).then(function() {
+                        if (fullInventoryData && fullInventoryData.length > 0) {
+                            applyFiltersToInventory();
+                        }
+                    }).catch(function(error) {
+                        console.error('Failed to load inventory:', error);
+                    });
+                } else {
+                    applyFiltersToInventory();
+                }
+            }
+            
+            // Extract product names from inventory for comparison
+            function getProductNamesFromInventory() {
+                if (!fullInventoryData || !Array.isArray(fullInventoryData)) {
+                    return [];
+                }
+                
+                // Extract unique product titles
+                const productNames = [];
+                fullInventoryData.forEach(function(item) {
+                    if (item.product_title && item.product_title.trim()) {
+                        productNames.push(item.product_title.trim());
+                    }
+                });
+                
+                // Return unique product names
+                return [...new Set(productNames)];
+            }
+            
+            // Correct user input using ChatGPT Nano before filtering
+            function correctInput(input, callback) {
+                if (!input || input.trim().length === 0) {
+                    callback(input);
+                    return;
+                }
+                
+                // Get product names from inventory for comparison
+                const productNames = getProductNamesFromInventory();
+                
+                // Store original input for debug
+                $('#correctorOriginal').text('Original Input: ' + input + '\n\nProduct Names Count: ' + productNames.length);
+                
+                $.ajax({
+                    url: 'input_corrector.php',
+                    method: 'POST',
+                    data: {
+                        input: input,
+                        productNames: JSON.stringify(productNames)
+                    },
+                    dataType: 'json',
+                    timeout: 20000,
+                    success: function(response) {
+                        // Store raw response for debug
+                        let debugInfo = 'Full Response:\n' + JSON.stringify(response, null, 2);
+                        if (response.rawOutput) {
+                            debugInfo += '\n\n--- Raw AI Output ---\n' + response.rawOutput;
+                        }
+                        $('#correctorRawOutput').text(debugInfo);
+                        
+                        if (response.success && response.corrected) {
+                            // Store corrected input for debug
+                            $('#correctorCorrected').text('Corrected Input: ' + response.corrected + '\n\nProduct Names Count: ' + (response.productNamesCount || 0));
+                            
+                            // Always update the input field with corrected text
+                            if (response.corrected.trim() !== '') {
+                                $('#productNameFilter').val(response.corrected);
+                            }
+                            callback(response.corrected);
+                        } else {
+                            // On error, use original input
+                            $('#correctorCorrected').text('Error: Using original input\n' + (response.error || 'Unknown error'));
+                            callback(input);
+                        }
+                    },
+                    error: function(xhr, status, error) {
+                        // Store error for debug
+                        $('#correctorRawOutput').text('AJAX Error:\nStatus: ' + status + '\nError: ' + error + '\nResponse: ' + (xhr.responseText || 'No response'));
+                        $('#correctorCorrected').text('Error: Using original input');
+                        // On error, use original input
+                        callback(input);
+                    }
+                });
+            }
+            
+            // Apply structured filters to inventory
+            function applyFiltersToInventory() {
+                const filters = getFiltersFromUI();
+                
+                $('#inventoryContainer').addClass('hidden');
+                $('#errorState').addClass('hidden');
+                
+                // Manual filters - no AI correction, just apply directly
+                $('#loadingState').removeClass('hidden');
+                $('#loadingMessage').text('Applying filters...');
+                applyFiltersWithCorrectedInput(filters);
+            }
+            
+            // Apply filters with corrected input
+            function applyFiltersWithCorrectedInput(filters) {
+                $.ajax({
+                    url: 'shopify_inventory.php',
+                    method: 'POST',
+                    data: {
+                        endpoint: 'apply_filters',
+                        filters: JSON.stringify(filters),
+                        inventory: JSON.stringify(fullInventoryData)
+                    },
+                    dataType: 'json',
+                    timeout: 30000,
+                    success: function(response) {
+                        if (response.success && response.inventory) {
+                            displayInventory(response.inventory, response.summary, 'filtered');
+                        } else {
+                            showError(response.error || 'Failed to apply filters.');
+                        }
+                    },
+                    error: function(xhr, status, error) {
+                        let errorMsg = 'Failed to apply filters. ';
+                        if (xhr.status === 400) {
+                            try {
+                                const errorResponse = JSON.parse(xhr.responseText);
+                                errorMsg = errorResponse.error || errorMsg;
+                            } catch (e) {
+                                errorMsg += error || 'Unknown error occurred.';
+                            }
+                        } else {
+                            errorMsg += error || 'Unknown error occurred.';
+                        }
+                        showError(errorMsg);
+                    }
+                });
+            }
+            
+            function displayInventory(inventoryData, summary, endpoint = 'inventory') {
+                $('#loadingState').addClass('hidden');
+                $('#errorState').addClass('hidden');
+                
+                const tableBody = $('#inventoryTableBody');
+                tableBody.empty();
+                
+                // Display inventory items
+                inventoryData.forEach(item => {
+                    const statusClass = item.status === 'out_of_stock' 
+                        ? 'text-red-400' 
+                        : item.status === 'low_stock' 
+                            ? 'text-yellow-400' 
+                            : 'text-green-400';
+                    const statusText = item.status === 'out_of_stock' 
+                        ? 'Out of Stock' 
+                        : item.status === 'low_stock' 
+                            ? 'Low Stock' 
+                            : 'In Stock';
+                    const locationCount = item.location_count > 0 
+                        ? `${item.location_count} location(s)` 
+                        : 'No locations';
+                    
+                    const productLink = item.product_url || '';
+                    const price = parseFloat(item.price || 0);
+                    const formattedPrice = price > 0 ? '$' + price.toFixed(2) : 'N/A';
+                    const tags = item.tags ? item.tags.split(',').map(t => t.trim()).filter(t => t) : [];
+                    
+                    // Limit tags to 3 and truncate long tag names
+                    const displayTags = tags.slice(0, 3).map(tag => {
+                        const maxTagLength = 20;
+                        const truncatedTag = tag.length > maxTagLength ? tag.substring(0, maxTagLength) + '...' : tag;
+                        return `<span class="inline-block px-2 py-0.5 bg-neon-blue/20 dark:bg-neon-blue/20 light:bg-blue-100 text-neon-blue dark:text-neon-blue light:text-blue-700 text-xs font-medium rounded-full border border-neon-blue/30 dark:border-neon-blue/30 light:border-blue-300">${escapeHtml(truncatedTag)}</span>`;
+                    });
+                    
+                    const tagsHtml = displayTags.length > 0 ? displayTags.join(' ') : '<span class="text-white/40 dark:text-white/40 light:text-gray-400 text-xs">No tags</span>';
+                    
+                    // Truncate product title if too long
+                    const maxTitleLength = 60;
+                    const productTitle = item.product_title || '';
+                    const displayTitle = productTitle.length > maxTitleLength ? productTitle.substring(0, maxTitleLength) + '...' : productTitle;
+                    
+                    const row = `
+                        <tr class="hover:bg-glass-dark/20 dark:hover:bg-glass-dark/20 light:hover:bg-gray-50 transition-colors group" data-tags="${escapeHtml(item.tags || '')}">
+                            <td class="py-4 px-4">
+                                <div class="font-medium text-white dark:text-white light:text-gray-900 mb-1" title="${escapeHtml(productTitle)}">${escapeHtml(displayTitle)}</div>
+                                ${tags.length > 0 ? `<div class="flex flex-wrap gap-1 mt-2">${tagsHtml}${tags.length > 3 ? `<span class="text-white/40 dark:text-white/40 light:text-gray-400 text-xs">+${tags.length - 3}</span>` : ''}</div>` : ''}
+                            </td>
+                            <td class="py-4 px-4 font-mono text-xs text-white/80 dark:text-white/80 light:text-gray-600">${escapeHtml(hashSKU(item.sku))}</td>
+                            <td class="py-4 px-4 text-right font-semibold text-white dark:text-white light:text-gray-900">${formattedPrice}</td>
+                            <td class="py-4 px-4 text-right font-semibold text-white dark:text-white light:text-gray-900">${item.available_quantity || 0}</td>
+                            <td class="py-4 px-4 text-right">
+                                <span class="${statusClass} font-semibold">${statusText}</span>
+                            </td>
+                            <td class="py-4 px-4 text-center">
+                                ${productLink ? `<a href="${escapeHtml(productLink)}" target="_blank" rel="noopener noreferrer" class="text-neon-blue hover:text-neon-blue/80 dark:text-neon-blue dark:hover:text-neon-blue/80 light:text-blue-600 light:hover:text-blue-700 underline text-sm transition-colors font-medium">View</a>` : '<span class="text-white/40 dark:text-white/40 light:text-gray-400 text-sm">-</span>'}
+                            </td>
+                        </tr>
+                    `;
+                    tableBody.append(row);
+                });
+                
+                // Display summary stats
+                const summaryHtml = `
+                    <div class="backdrop-blur-md bg-chrome-accent/40 dark:bg-chrome-accent/40 light:bg-gray-50 border border-white/10 dark:border-white/10 light:border-gray-200 rounded-xl p-6 shadow-sm">
+                        <div class="text-white/60 dark:text-white/60 light:text-gray-600 text-sm mb-2 font-medium">Total Products</div>
+                        <div class="text-3xl font-bold text-white dark:text-white light:text-gray-900">${summary.total_products || 0}</div>
+                    </div>
+                    <div class="backdrop-blur-md bg-chrome-accent/40 dark:bg-chrome-accent/40 light:bg-gray-50 border border-white/10 dark:border-white/10 light:border-gray-200 rounded-xl p-6 shadow-sm">
+                        <div class="text-white/60 dark:text-white/60 light:text-gray-600 text-sm mb-2 font-medium">Total Available</div>
+                        <div class="text-3xl font-bold text-white dark:text-white light:text-gray-900">${summary.total_available || 0}</div>
+                    </div>
+                    <div class="backdrop-blur-md bg-chrome-accent/40 dark:bg-chrome-accent/40 light:bg-gray-50 border border-white/10 dark:border-white/10 light:border-gray-200 rounded-xl p-6 shadow-sm">
+                        <div class="text-white/60 dark:text-white/60 light:text-gray-600 text-sm mb-2 font-medium">Low Stock Items</div>
+                        <div class="text-3xl font-bold ${(summary.low_stock_items || 0) > 0 ? 'text-yellow-400 dark:text-yellow-400 light:text-yellow-600' : 'text-white dark:text-white light:text-gray-900'}">${summary.low_stock_items || 0}</div>
+                    </div>
+                `;
+                $('#summaryStats').html(summaryHtml);
+                
+                // Update last updated time
+                $('#lastUpdated').text('Last updated: ' + new Date().toLocaleString());
+                
+                $('#inventoryContainer').removeClass('hidden');
+            }
+            
+            function showError(message) {
+                $('#loadingState').addClass('hidden');
+                $('#inventoryContainer').addClass('hidden');
+                $('#errorMessage').text(message);
+                $('#errorState').removeClass('hidden');
+            }
+            
+            function escapeHtml(text) {
+                const div = document.createElement('div');
+                div.textContent = text;
+                return div.innerHTML;
+            }
+            
+            // Hash SKU to create a code-like identifier
+            function hashSKU(sku) {
+                if (!sku || sku === 'N/A') {
+                    return 'N/A';
+                }
+                // Simple hash function to create a short code-like string
+                let hash = 0;
+                const str = String(sku);
+                for (let i = 0; i < str.length; i++) {
+                    const char = str.charCodeAt(i);
+                    hash = ((hash << 5) - hash) + char;
+                    hash = hash & hash; // Convert to 32bit integer
+                }
+                // Convert to positive hex string and take first 8 characters
+                const hashStr = Math.abs(hash).toString(16).toUpperCase().padStart(8, '0');
+                return hashStr.substring(0, 8);
+            }
+        });
+    </script>
+</body>
+</html>
